@@ -46,28 +46,28 @@ function handleInstance(state, start, end) {
     if (start >= end) return 'not support';
 
     var now = getNow();
+    return "start";
+    //if (now >= start && now < end) {
+    //    console.log("running time");
+    //    if (state === "stopped") {
+    //        return "start";
+    //    } else {
+    //        console.log("state = " + state + ". nothing");
+    //        return "nothing";
+    //    }
 
-    if (now >= start && now < end) {
-        console.log("running time");
-        if (state === "stopped") {
-            return "start";
-        } else {
-            console.log("state = " + state + ". nothing");
-            return "nothing";
-        }
-
-    } else if (now < start || now >= end) {
-        console.log("stopping time");
-        if (state === "running") {
-            return "stop";
-        } else {
-            console.log("state = " + state + ". nothing");
-            return "nothing";
-        }
-    } else {
-        console.log("nothing");
-        return "nothing";
-    }
+    //} else if (now < start || now >= end) {
+    //    console.log("stopping time");
+    //    if (state === "running") {
+    //        return "stop";
+    //    } else {
+    //        console.log("state = " + state + ". nothing");
+    //        return "nothing";
+    //    }
+    //} else {
+    //    console.log("nothing");
+    //    return "nothing";
+    //}
 }
 
 function validValue(key, value) {
@@ -116,7 +116,9 @@ function getDateValue(instance, tagName) {
     console.log(tagName + " = " + value.format());
     return value;
 }
-
+//-----------------------------------------------------------
+// main
+//-----------------------------------------------------------
 exports.handler = function (event, context) {
     console.log("start");
     var ec2 = new aws.EC2();
@@ -124,14 +126,15 @@ exports.handler = function (event, context) {
         Filters: [
             {
                 Name: 'tag-key',
-                Values: ['Type']
+                Values: ['Name']
             },
             {
                 Name: 'tag-value',
-                Values: ['dev']
+                Values: ['zNAT_Server(Linux)']
             },
         ]
     };
+    console.log("start1");
     ec2.describeInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
         else if (data.Reservations.length == 0) console.log("don't find ec2");
@@ -140,10 +143,11 @@ exports.handler = function (event, context) {
             async.forEach(data.Reservations, function (reservation, callback) {
                 var instance = reservation.Instances[0];
                 console.log("check instance(id = " + instance.InstanceId + ")");
-                var start = getDateValue(instance, 'Start');
-                var end = getDateValue(instance, 'End');
+                var start = getDateValue(instance, 'AutoStart'); //--Start
+                var end = getDateValue(instance, 'AutoStop'); //--End
                 if (start != "" && end != "") {
                     var result = handleInstance(instance.State.Name, start, end);
+
                     if (result === "start") {
                         startInstance(ec2, instance.InstanceId, function () {
                             callback();
@@ -153,6 +157,7 @@ exports.handler = function (event, context) {
                             callback();
                         });
                     } else {
+                        console.log("check handleInstance(message) = " + result + ")");
                         callback();
                     }
                 } else {
