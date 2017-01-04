@@ -1,9 +1,9 @@
-﻿//console.log('Loading');
-var aws = require('aws-sdk');
+﻿var aws = require('aws-sdk');
 var moment = require("moment");
 var async = require('async');
 
-aws.config.update({ region: 'ap-northeast-1' });        //Tokyo
+aws.config.update({ region: 'ap-northeast-1' });
+var NOWDATE = getNow();
 
 function getHour(value) {
     return value.split(":", 2)[0];
@@ -41,12 +41,35 @@ function startInstance(ec2, instanceId, callback) {
     });
 }
 
-function handleInstance(state, start, end) {
+function handleInstance(state, start, end, nowhhmm) {
     // not support
     if (start >= end) return 'not support';
 
-    var now = getNow();
+    //var now = getNow();
+    var now = NOWDATE;
 
+    if (start === nowhhmm) {
+        console.log("running time");
+        if (state === "stopped") {
+            return "start";
+        } else {
+            console.log("state = " + state + ". nothing");
+            return "nothing";
+        }
+    } else if (end === nowhhmm) {
+        console.log("stopping time");
+        if (state === "running") {
+            return "stop";
+        } else {
+            console.log("state = " + state + ". nothing");
+            return "nothing";
+        }
+    } else {
+            console.log("nothing");
+            return "nothing";
+    }
+
+    /*
     if (now >= start && now < end) {
         console.log("running time");
         if (state === "stopped") {
@@ -68,6 +91,7 @@ function handleInstance(state, start, end) {
         console.log("nothing");
         return "nothing";
     }
+    */
 }
 
 function validValue(key, value) {
@@ -98,6 +122,21 @@ function validValue(key, value) {
 
     return true;
 }
+//
+function checkweekMonFri(value) {
+    var flg = 0;
+    switch (value) {
+        case 'Monday':
+        case 'Tuesday':
+        case 'Wednesda':
+        case 'Thursday':
+        case 'Friday':
+            return 1;
+        case 'Saturday':
+        case 'Sunday':
+            return 0;
+    }
+}
 
 function getNow() {
     return moment().utcOffset("+09:00");
@@ -110,18 +149,49 @@ function getDateValue(instance, tagName) {
         if (tag.Key === tagName) tagValue = tag.Value;
     });
     if (!(validValue(tagName, tagValue))) return "";
-    var now = getNow();
-    var month = now.get('month') + 1;
-    var value = moment(now.get('year') + '-' + month + '-' + now.get('date') + ' ' + getHour(tagValue) + ':' + getMinute(tagValue) + ' +09:00', 'YYYY-MM-DD HH:mm Z');
-    console.log(tagName + " = " + value.format());
+    //var now = NOWDATE;//getNow();
+    //var month = now.get('month') + 1;
+    //var value = moment(now.get('year') + '-' + month + '-' + now.get('date') + ' ' +
+    //    getHour(tagValue) + ':' + getMinute(tagValue) + ' +09:00', 'YYYY-MM-DD HH:mm Z');
+    //console.log(tagName + " = " + value.format());
+    console.log(tagName + " = " + tagValue);
+    var value = tagValue;
     return value;
 }
-//-----------------------------------------------------------
+function getMinute10(value) {
+    var now = value.format("HH:mm");
+
+    //now = "9:12";
+    var hour = getHour(now);
+    var min = getMinute(now);
+    var value = "00";
+
+    if (0 <= min < 10)
+        value = "00";
+    if (10 <= min < 20)
+        value = "10";
+    if (20 <= min < 30)
+        value = "20";
+    if (30 <= min < 40)
+        value = "30";
+    if (40 <= min < 50)
+        value = "40";
+    if (50 <= min < 60)
+        value = "50";
+    console.log("check getMinute10(id = " + hour + ":" + value + ")");
+    return hour + ":" + value;
+}
 // main
-//-----------------------------------------------------------
 exports.handler = function (event, context) {
     console.log("start");
+
+    if (checkweekMonFri === 0) {
+        console.log("out of Mon-Fir");
+        return "";
+    }
+    //nowdate = getNow();
     var ec2 = new aws.EC2();
+    var nowhhmm = getMinute10(NOWDATE);
     params = {
         Filters: [
             {
@@ -134,7 +204,6 @@ exports.handler = function (event, context) {
             },
         ]
     };
-    console.log("start1");
     ec2.describeInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
         else if (data.Reservations.length == 0) console.log("don't find ec2");
@@ -143,11 +212,13 @@ exports.handler = function (event, context) {
             async.forEach(data.Reservations, function (reservation, callback) {
                 var instance = reservation.Instances[0];
                 console.log("check instance(id = " + instance.InstanceId + ")");
+
                 var start = getDateValue(instance, 'AutoStart'); //--Start
                 var end = getDateValue(instance, 'AutoStop'); //--End
-                if (start != "" && end != "") {
-                    var result = handleInstance(instance.State.Name, start, end);
+               
 
+                if (start != "" && end != "") {
+                    var result = handleInstance(instance.State.Name, start, end, nowhhmm);
                     if (result === "start") {
                         startInstance(ec2, instance.InstanceId, function () {
                             callback();
@@ -169,13 +240,4 @@ exports.handler = function (event, context) {
             });
         }
     });
-    //if (event != null) {
-    //    console.log('event = ' + JSON.stringify(event));
-    //}
-    //else {
-    //    console.log('No event object');
-
-    //}
-
-    //context.done(null, 'Hello World');  // SUCCESS with message
 };
