@@ -96,7 +96,6 @@ function handleInstance(state, start, end, nowhhmm) {
 }
 
 function validValue(key, value) {
-
     // null
     if (!value) {
         console.log(key + " = null or undefined");
@@ -123,7 +122,7 @@ function validValue(key, value) {
 
     return true;
 }
-//
+
 function checkweekMonFri(value) {
     var flg = 0;
     switch (value) {
@@ -132,10 +131,11 @@ function checkweekMonFri(value) {
         case 'Wednesda':
         case 'Thursday':
         case 'Friday':
-            console.log(
+            console.log("checkweekMonFri = Mon-Fri");
             return 1;
         case 'Saturday':
         case 'Sunday':
+            console.log("checkweekMonFri = Sat-Sun");
             return 0;
     }
 }
@@ -143,7 +143,6 @@ function checkweekMonFri(value) {
 function getNow() {
     //console.log("TEST");
     return moment().utcOffset("+09:00");
-    
 }
 
 function getDateValue(instance, tagName) {
