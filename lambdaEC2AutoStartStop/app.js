@@ -4,7 +4,7 @@ var moment = require("moment");
 var async = require('async');
 
 aws.config.update({ region: 'ap-northeast-1' });        //Tokyo
-var NOWDATE = getNow();
+var NOWDATE;
 
 function getHour(value) {
     return value.split(":", 2)[0];
@@ -44,7 +44,7 @@ function startInstance(ec2, instanceId, callback) {
 
 function handleInstance(state, start, end, nowhhmm) {
     // not support
-    if (start >= end) return 'not support';
+    //if (start >= end) return 'not support';
 
     //var now = getNow();
     var now = NOWDATE;
@@ -132,6 +132,7 @@ function checkweekMonFri(value) {
         case 'Wednesda':
         case 'Thursday':
         case 'Friday':
+            console.log(
             return 1;
         case 'Saturday':
         case 'Sunday':
@@ -140,7 +141,9 @@ function checkweekMonFri(value) {
 }
 
 function getNow() {
+    //console.log("TEST");
     return moment().utcOffset("+09:00");
+    
 }
 
 function getDateValue(instance, tagName) {
@@ -160,33 +163,42 @@ function getDateValue(instance, tagName) {
     return value;
 }
 function getMinute10(value) {
+    console.log('getMinute10 from');
     var now = value.format("HH:mm");
-
+    console.log(now);
     //now = "9:12";
+
     var hour = getHour(now);
     var min = getMinute(now);
-    var value = "00";
 
-    if (0 <= min < 10)
+    var value = "00";
+    var smin = Number(min);
+
+    console.log("min = " + smin);
+    if (smin < 10) {
         value = "00";
-    if (10 <= min < 20)
+    } else if (smin < 20) {
         value = "10";
-    if (20 <= min < 30)
+    } else if (smin < 30) {
         value = "20";
-    if (30 <= min < 40)
+    } else if (smin < 40) {
         value = "30";
-    if (40 <= min < 50)
+    } else if (smin < 50) {
         value = "40";
-    if (50 <= min < 60)
+    } else if (smin < 60){
         value = "50";
-    console.log("check getMinute10(id = " + hour + ":" + value + ")");
+    }
+
+    console.log("check getMinute10 = " + hour + ":" + value + "");
     return hour + ":" + value;
 }
+//-----------------------------------------------------------
 // main
 //-----------------------------------------------------------
 exports.handler = function (event, context) {
     console.log("start");
-
+    var NOWDATE = getNow();
+    console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm Z'));
     if (checkweekMonFri === 0) {
         console.log("out of Mon-Fir");
         return "";
@@ -194,6 +206,7 @@ exports.handler = function (event, context) {
     //nowdate = getNow();
     var ec2 = new aws.EC2();
     var nowhhmm = getMinute10(NOWDATE);
+
     params = {
         Filters: [
             {
