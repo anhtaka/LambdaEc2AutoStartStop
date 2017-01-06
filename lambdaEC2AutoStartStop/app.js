@@ -47,7 +47,7 @@ function handleInstance(state, start, end, nowhhmm) {
     //if (start >= end) return 'not support';
 
     //var now = getNow();
-    var now = NOWDATE;
+    //var now = NOWDATE;
 
     if (start === nowhhmm) {
         console.log("running time");
@@ -101,6 +101,10 @@ function validValue(key, value) {
         console.log(key + " = null or undefined");
         return false;
     }
+    // 0:nothing 1:decided start end time
+    if (value === "0" || value === "1"){
+        return true;
+    }
 
     // format
     if (!(value.match(/^[0-9]{1,2}:[0-9][0-9]$/))) {
@@ -145,7 +149,7 @@ function getNow() {
     return moment().utcOffset("+09:00");
 }
 
-function getDateValue(instance, tagName) {
+function getDateValue(instance, tagName, vnowhhmm) {
     var value = "";
     var tagValue = "";
     instance.Tags.forEach(function (tag) {
@@ -157,6 +161,26 @@ function getDateValue(instance, tagName) {
     //var value = moment(now.get('year') + '-' + month + '-' + now.get('date') + ' ' +
     //    getHour(tagValue) + ':' + getMinute(tagValue) + ' +09:00', 'YYYY-MM-DD HH:mm Z');
     //console.log(tagName + " = " + value.format());
+
+    if (tagName === "AutoStart") {
+        if (tagValue === "1") {
+            tagValue = "08:30";
+        } else if (tagValue === "0") {
+            tagValue = "99:99";
+        }
+    }
+    if (tagName === "AutoStop") {
+        if (tagValue === "1") {
+            if (vnowhhmm === "22:00") {
+                tagValue = "22:00";
+            } else {
+                tagValue = "20:00";
+            }
+        } else if (tagValue === "0") {
+            tagValue = "99:99";
+        }
+    }
+    
     console.log(tagName + " = " + tagValue);
     var value = tagValue;
     return value;
@@ -196,7 +220,8 @@ function getMinute10(value) {
 //-----------------------------------------------------------
 exports.handler = function (event, context) {
     console.log("start");
-    var NOWDATE = getNow();
+    NOWDATE = getNow();
+
     console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm Z'));
     if (checkweekMonFri === 0) {
         console.log("out of Mon-Fir");
@@ -214,7 +239,9 @@ exports.handler = function (event, context) {
             },
             {
                 Name: 'tag-value',
-                Values: ['zNAT_Server(Linux)']
+                Values: ['zNAT_Server(Linux)',
+                    'AEG_AGRI(WIN2012R2)'
+                ]
             },
         ]
     };
@@ -226,8 +253,8 @@ exports.handler = function (event, context) {
             async.forEach(data.Reservations, function (reservation, callback) {
                 var instance = reservation.Instances[0];
                 console.log("check instance(id = " + instance.InstanceId + ")");
-                var start = getDateValue(instance, 'AutoStart'); //--Start
-                var end = getDateValue(instance, 'AutoStop'); //--End
+                var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
+                var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
                 if (start != "" && end != "") {
                     var result = handleInstance(instance.State.Name, start, end, nowhhmm);
                     if (result === "start") {
