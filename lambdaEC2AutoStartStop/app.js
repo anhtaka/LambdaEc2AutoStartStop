@@ -185,6 +185,18 @@ function getDateValue(instance, tagName, vnowhhmm) {
     var value = tagValue;
     return value;
 }
+function getTagValue(instance, tagName) {
+    var value = "";
+    var tagValue = "";
+    instance.Tags.forEach(function (tag) {
+        if (tag.Key === tagName) tagValue = tag.Value;
+    });
+    //console.log(tagName + " = " + tagValue);
+    //var value = tagValue;
+    return tagValue;
+}
+
+
 function getMinute10(value) {
     console.log('getMinute10 from');
     var now = value.format("HH:mm");
@@ -235,13 +247,11 @@ exports.handler = function (event, context) {
         Filters: [
             {
                 Name: 'tag-key',
-                Values: ['Name']
+                Values: ['Description']
             },
             {
                 Name: 'tag-value',
-                Values: ['zNAT_Server(Linux)',
-                    'AEG_AGRI(WIN2012R2)'
-                ]
+                Values: ['Linux']
             },
         ]
     };
@@ -252,7 +262,8 @@ exports.handler = function (event, context) {
             console.log(data);
             async.forEach(data.Reservations, function (reservation, callback) {
                 var instance = reservation.Instances[0];
-                console.log("check instance(id = " + instance.InstanceId + ")");
+                var serName = getTagValue(instance, 'Name'); //--Start
+                console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
                 var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
                 var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
                 if (start != "" && end != "") {
