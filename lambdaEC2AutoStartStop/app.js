@@ -163,13 +163,20 @@ function getDateValue(instance, tagName, vnowhhmm) {
     //    getHour(tagValue) + ':' + getMinute(tagValue) + ' +09:00', 'YYYY-MM-DD HH:mm Z');
     //console.log(tagName + " = " + value.format());
 
+    //AutoStart-----------------------------
     if (tagName === "AutoStart") {
-        if (tagValue === "1") {
-            tagValue = "08:30";
-        } else if (tagValue === "0") {
+        if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
+            if (tagValue === "1") {
+                tagValue = "08:30";
+            } else if (tagValue === "0") {
+                tagValue = "99:99";
+            }
+        } else {
+            //don't exec starday,sunday
             tagValue = "99:99";
         }
     }
+    //AutoStop-----------------------------
     if (tagName === "AutoStop") {
         if (tagValue === "1") {
             if (vnowhhmm === "22:00") {
@@ -201,7 +208,7 @@ function getTagValue(instance, tagName) {
 function getMinute10(value) {
     console.log('getMinute10 from');
     var now = value.format("HH:mm");
-    console.log(now);
+    //console.log(now);
     //now = "9:12";
 
     var hour = getHour(now);
@@ -210,7 +217,7 @@ function getMinute10(value) {
     var value = "00";
     var smin = Number(min);
 
-    console.log("min = " + smin);
+    //console.log("min = " + smin);
     if (smin < 10) {
         value = "00";
     } else if (smin < 20) {
@@ -235,11 +242,14 @@ exports.handler = function (event, context) {
     console.log("start");
     NOWDATE = getNow();
 
-    console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm Z'));
-    if (checkweekMonFri === 0) {
-        console.log("out of Mon-Fir");
-        return "";
+    console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm dddd Z'));
+    if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
+        console.log("checkweekMonFri = Mon-Fri");
+        //return "";
+    } else {
+        console.log("checkweekMonFri = Sat-Sun");
     }
+
     //nowdate = getNow();
     var ec2 = new aws.EC2();
     var nowhhmm = getMinute10(NOWDATE);
