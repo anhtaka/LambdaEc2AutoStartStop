@@ -136,11 +136,11 @@ function checkweekMonFri(value) {
         case 'Wednesda':
         case 'Thursday':
         case 'Friday':
-            console.log("checkweekMonFri = Mon-Fri");
+            //console.log("checkweekMonFri = Mon-Fri");
             return 1;
         case 'Saturday':
         case 'Sunday':
-            console.log("checkweekMonFri = Sat-Sun");
+            //console.log("checkweekMonFri = Sat-Sun");
             return 0;
     }
 }
