@@ -1,4 +1,5 @@
 ﻿//console.log('Loading');
+
 var aws = require('aws-sdk');
 var moment = require("moment");
 var async = require('async');
@@ -47,7 +48,7 @@ function handleInstance(state, start, end, nowhhmm) {
     //if (start >= end) return 'not support';
 
     //var now = getNow();
-    var now = NOWDATE;
+    //var now = NOWDATE;
 
     if (start === nowhhmm) {
         console.log("running time");
@@ -101,6 +102,10 @@ function validValue(key, value) {
         console.log(key + " = null or undefined");
         return false;
     }
+    // 0:nothing 1:decided start end time
+    if (value === "0" || value === "1"){
+        return true;
+    }
 
     // format
     if (!(value.match(/^[0-9]{1,2}:[0-9][0-9]$/))) {
@@ -131,11 +136,11 @@ function checkweekMonFri(value) {
         case 'Wednesda':
         case 'Thursday':
         case 'Friday':
-            console.log("checkweekMonFri = Mon-Fri");
+            //console.log("checkweekMonFri = Mon-Fri");
             return 1;
         case 'Saturday':
         case 'Sunday':
-            console.log("checkweekMonFri = Sat-Sun");
+            //console.log("checkweekMonFri = Sat-Sun");
             return 0;
     }
 }
@@ -145,7 +150,7 @@ function getNow() {
     return moment().utcOffset("+09:00");
 }
 
-function getDateValue(instance, tagName) {
+function getDateValue(instance, tagName, vnowhhmm) {
     var value = "";
     var tagValue = "";
     instance.Tags.forEach(function (tag) {
@@ -157,14 +162,53 @@ function getDateValue(instance, tagName) {
     //var value = moment(now.get('year') + '-' + month + '-' + now.get('date') + ' ' +
     //    getHour(tagValue) + ':' + getMinute(tagValue) + ' +09:00', 'YYYY-MM-DD HH:mm Z');
     //console.log(tagName + " = " + value.format());
+
+    //AutoStart-----------------------------
+    if (tagName === "AutoStart") {
+        if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
+            if (tagValue === "1") {
+                tagValue = "08:30";
+            } else if (tagValue === "0") {
+                tagValue = "99:99";
+            }
+        } else {
+            //don't exec starday,sunday
+            tagValue = "99:99";
+        }
+    }
+    //AutoStop-----------------------------
+    if (tagName === "AutoStop") {
+        if (tagValue === "1") {
+            if (vnowhhmm === "22:00") {
+                tagValue = "22:00";
+            } else {
+                tagValue = "20:00";
+            }
+        } else if (tagValue === "0") {
+            tagValue = "99:99";
+        }
+    }
+    
     console.log(tagName + " = " + tagValue);
     var value = tagValue;
     return value;
 }
+function getTagValue(instance, tagName) {
+    var value = "";
+    var tagValue = "";
+    instance.Tags.forEach(function (tag) {
+        if (tag.Key === tagName) tagValue = tag.Value;
+    });
+    //console.log(tagName + " = " + tagValue);
+    //var value = tagValue;
+    return tagValue;
+}
+
+
 function getMinute10(value) {
     console.log('getMinute10 from');
     var now = value.format("HH:mm");
-    console.log(now);
+    //console.log(now);
     //now = "9:12";
 
     var hour = getHour(now);
@@ -173,7 +217,7 @@ function getMinute10(value) {
     var value = "00";
     var smin = Number(min);
 
-    console.log("min = " + smin);
+    //console.log("min = " + smin);
     if (smin < 10) {
         value = "00";
     } else if (smin < 20) {
@@ -196,12 +240,16 @@ function getMinute10(value) {
 //-----------------------------------------------------------
 exports.handler = function (event, context) {
     console.log("start");
-    var NOWDATE = getNow();
-    console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm Z'));
-    if (checkweekMonFri === 0) {
-        console.log("out of Mon-Fir");
-        return "";
+    NOWDATE = getNow();
+
+    console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm dddd Z'));
+    if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
+        console.log("checkweekMonFri = Mon-Fri");
+        //return "";
+    } else {
+        console.log("checkweekMonFri = Sat-Sun");
     }
+
     //nowdate = getNow();
     var ec2 = new aws.EC2();
     var nowhhmm = getMinute10(NOWDATE);
@@ -210,11 +258,11 @@ exports.handler = function (event, context) {
         Filters: [
             {
                 Name: 'tag-key',
-                Values: ['Name']
+                Values: ['Description']
             },
             {
                 Name: 'tag-value',
-                Values: ['zNAT_Server(Linux)']
+                Values: ['Linux']
             },
         ]
     };
@@ -225,9 +273,10 @@ exports.handler = function (event, context) {
             console.log(data);
             async.forEach(data.Reservations, function (reservation, callback) {
                 var instance = reservation.Instances[0];
-                console.log("check instance(id = " + instance.InstanceId + ")");
-                var start = getDateValue(instance, 'AutoStart'); //--Start
-                var end = getDateValue(instance, 'AutoStop'); //--End
+                var serName = getTagValue(instance, 'Name'); //--Start
+                console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
+                var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
+                var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
                 if (start != "" && end != "") {
                     var result = handleInstance(instance.State.Name, start, end, nowhhmm);
                     if (result === "start") {

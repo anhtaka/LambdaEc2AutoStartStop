@@ -13,8 +13,8 @@
         "sourceIPAddress": "127.0.0.1"
       },
       "responseElements": {
-        "x-amz-request-id": "C3D13FE58DE4C810",
-        "x-amz-id-2": "FMyUVURIY8\/IgAtTv8xRjskZQpcIZ9KG4V5Wp6S7S\/JRWeUWerMUE5JgHvANOjpD"
+        "x-amz-request-id": "TEST13FE58DE4C810",
+        "x-amz-id-2": "TESTVURIY8\/IgAtTv8xRjskZQpcIZ9KG4V5Wp6S7S\/JRWeUWerMUE5JgHvANOjpD"
       },
       "s3": {
         "s3SchemaVersion": "1.0",
