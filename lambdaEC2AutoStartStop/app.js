@@ -239,7 +239,7 @@ function getMinute10(value) {
 // main
 //-----------------------------------------------------------
 exports.handler = function (event, context) {
-    console.log("start");
+    console.log("-----------------start.-----------------");
     NOWDATE = getNow();
 
     console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm dddd Z'));
@@ -254,6 +254,7 @@ exports.handler = function (event, context) {
     var ec2 = new aws.EC2();
     var nowhhmm = getMinute10(NOWDATE);
 
+    //debug
     params = {
         Filters: [
             {
@@ -266,6 +267,8 @@ exports.handler = function (event, context) {
             },
         ]
     };
+
+    params = "" //全てのインスタンスに対して実行
     ec2.describeInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
         else if (data.Reservations.length == 0) console.log("don't find ec2");
@@ -295,7 +298,7 @@ exports.handler = function (event, context) {
                     callback();
                 }
             }, function () {
-                console.log('all done.');
+                console.log('-----------------all done.-----------------');
                 context.succeed('OK');
             });
         }
