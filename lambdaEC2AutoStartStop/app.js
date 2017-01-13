@@ -1,8 +1,7 @@
-﻿//console.log('Loading');
-
-var aws = require('aws-sdk');
+﻿var aws = require('aws-sdk');
 var moment = require("moment");
 var async = require('async');
+//console.log('Loading');
 
 aws.config.update({ region: 'ap-northeast-1' });        //Tokyo
 var NOWDATE;
@@ -190,7 +189,7 @@ function getDateValue(instance, tagName, vnowhhmm) {
     }
     
     console.log(tagName + " = " + tagValue);
-    var value = tagValue;
+    value = tagValue;
     return value;
 }
 function getTagValue(instance, tagName) {
@@ -210,30 +209,29 @@ function getMinute10(value) {
     var now = value.format("HH:mm");
     //console.log(now);
     //now = "9:12";
-
     var hour = getHour(now);
-    var min = getMinute(now);
 
-    var value = "00";
-    var smin = Number(min);
+    var vmin = getMinute(now);
+    var intmin = Number(vmin); //change int
 
+    var min = "00";
     //console.log("min = " + smin);
-    if (smin < 10) {
-        value = "00";
-    } else if (smin < 20) {
-        value = "10";
-    } else if (smin < 30) {
-        value = "20";
-    } else if (smin < 40) {
-        value = "30";
-    } else if (smin < 50) {
-        value = "40";
-    } else if (smin < 60){
-        value = "50";
+    if (intmin < 10) {
+        min = "00";
+    } else if (intmin < 20) {
+        min = "10";
+    } else if (intmin < 30) {
+        min = "20";
+    } else if (intmin < 40) {
+        min = "30";
+    } else if (intmin < 50) {
+        min = "40";
+    } else if (intmin < 60){
+        min = "50";
     }
 
-    console.log("check getMinute10 = " + hour + ":" + value + "");
-    return hour + ":" + value;
+    console.log("check getMinute10 = " + hour + ":" + min + "");
+    return hour + ":" + min;
 }
 //-----------------------------------------------------------
 // main
