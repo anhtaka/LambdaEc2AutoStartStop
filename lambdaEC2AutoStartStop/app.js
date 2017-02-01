@@ -132,7 +132,7 @@ function checkweekMonFri(value) {
     switch (value) {
         case 'Monday':
         case 'Tuesday':
-        case 'Wednesda':
+        case 'Wednesday':
         case 'Thursday':
         case 'Friday':
             //console.log("checkweekMonFri = Mon-Fri");
