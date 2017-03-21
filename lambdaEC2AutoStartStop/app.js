@@ -179,8 +179,8 @@ function getDateValue(instance, tagName, vnowhhmm) {
     //AutoStop-----------------------------
     if (tagName === "AutoStop") {
         if (tagValue === "1") {
-            if (vnowhhmm === "22:00") {
-                tagValue = "22:00";
+            if (vnowhhmm === "23:00") {
+                tagValue = "23:00";
             } else {
                 tagValue = "20:00";
             }
