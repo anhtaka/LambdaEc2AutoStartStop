@@ -14,7 +14,8 @@ function getMinute(value) {
     return value.split(":", 2)[1];
 }
 
-function stopInstance(ec2, instanceId, callback) {
+
+function stopInstance(ec2, instanceId) {
     console.log("stop EC2. id = " + instanceId);
     var params = {
         InstanceIds: [
@@ -24,11 +25,11 @@ function stopInstance(ec2, instanceId, callback) {
     ec2.stopInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
         else console.log("stop success. instance id = " + instanceId);
-        callback();
+        //callback();
     });
 }
 
-function startInstance(ec2, instanceId, callback) {
+function startInstance(ec2, instanceId) {
     console.log("start EC2. id = " + instanceId);
     var params = {
         InstanceIds: [
@@ -38,7 +39,7 @@ function startInstance(ec2, instanceId, callback) {
     ec2.startInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
         else console.log("start success. instance id = " + instanceId);
-        callback();
+        //callback();
     });
 }
 
@@ -66,8 +67,8 @@ function handleInstance(state, start, end, nowhhmm) {
             return "nothing";
         }
     } else {
-            console.log("nothing");
-            return "nothing";
+        console.log("nothing");
+        return "nothing";
     }
 
     /*
@@ -102,7 +103,7 @@ function validValue(key, value) {
         return false;
     }
     // 0:nothing 1:decided start end time
-    if (value === "0" || value === "1"){
+    if (value === "0" || value === "1") {
         return true;
     }
 
@@ -187,7 +188,7 @@ function getDateValue(instance, tagName, vnowhhmm) {
             tagValue = "99:99";
         }
     }
-    
+
     console.log(tagName + " = " + tagValue);
     value = tagValue;
     return value;
@@ -226,7 +227,7 @@ function getMinute10(value) {
         min = "30";
     } else if (intmin < 50) {
         min = "40";
-    } else if (intmin < 60){
+    } else if (intmin < 60) {
         min = "50";
     }
 
@@ -271,34 +272,62 @@ exports.handler = function (event, context) {
         if (err) console.log(err, err.stack);
         else if (data.Reservations.length == 0) console.log("don't find ec2");
         else {
-            console.log(data);
-            async.forEach(data.Reservations, function (reservation, callback) {
-                var instance = reservation.Instances[0];
-                var serName = getTagValue(instance, 'Name'); //--Start
-                console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
-                var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
-                var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
-                if (start != "" && end != "") {
-                    var result = handleInstance(instance.State.Name, start, end, nowhhmm);
-                    if (result === "start") {
-                        startInstance(ec2, instance.InstanceId, function () {
-                            callback();
-                        });
-                    } else if (result === "stop") {
-                        stopInstance(ec2, instance.InstanceId, function () {
-                            callback();
-                        });
-                    } else {
-                        console.log("check handleInstance(message) = " + result + ")");
-                        callback();
+            //console.log(data);
+            for (var i = 0; i < data.Reservations.length; i++) {
+                var res = data.Reservations[i];
+                var instances = res.Instances;
+                for (var j = 0; j < instances.length; j++) {
+                    var instanceID = instances[j].InstanceId;
+                    console.log('instance ' + instanceID);
+
+                    var instance = instances[j];
+                    var serName = getTagValue(instance, 'Name'); //--Start
+                    console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
+                    var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
+                    var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
+                    if (start != "" && end != "") {
+                        var result = handleInstance(instance.State.Name, start, end, nowhhmm);
+                        if (result === "start") {
+                            startInstance(ec2, instances[j].InstanceId);
+                        } else if (result === "stop") {
+                            stopInstance(ec2, instances[j].InstanceId);
+                        } else {
+                            console.log("check handleInstance(message) = " + result + ")");
+                            //callback();
+                        }
                     }
-                } else {
-                    callback();
                 }
-            }, function () {
-                console.log('-----------------all done.-----------------');
-                context.succeed('OK');
-            });
+            }
+            console.log('-----------------all done.-----------------');
+            //---------------------------
+            //async.forEach(data.Reservations, function (reservation, callback) {
+            //    var instance = reservation.Instances[0];
+            //    var serName = getTagValue(instance, 'Name'); //--Start
+            //    console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
+            //    var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
+            //    var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
+            //    if (start != "" && end != "") {
+            //        var result = handleInstance(instance.State.Name, start, end, nowhhmm);
+            //        if (result === "start") {
+            //            startInstance(ec2, instance.InstanceId, function () {
+            //                callback();
+            //            });
+            //        } else if (result === "stop") {
+            //            stopInstance(ec2, instance.InstanceId, function () {
+            //                callback();
+            //            });
+            //        } else {
+            //            console.log("check handleInstance(message) = " + result + ")");
+            //            callback();
+            //        }
+            //    } else {
+            //        callback();
+            //    }
+            //}, function () {
+            //    console.log('-----------------all done.-----------------');
+            //    context.succeed('OK');
+            // });
+            //-----------------------------
         }
     });
     //if (event != null) {
