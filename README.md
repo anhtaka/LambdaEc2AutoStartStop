@@ -1,4 +1,7 @@
 # lambdaEC2AutoStartStop
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7a83bd3a78864265879cc45b1068df36)](https://app.codacy.com/app/ponta_gogo677/lambdaEC2AutoStartStop?utm_source=github.com&utm_medium=referral&utm_content=gogosub77/lambdaEC2AutoStartStop&utm_campaign=badger)
+
 EC2 AutoStartStop From Lambda node.js
 
 # 概要
