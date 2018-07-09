@@ -40,6 +40,8 @@
     <Compile Include="_testdriver.js" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="package-lock.json" />
+    <Content Include="package.json" />
     <Content Include="_sampleEvent.json" />
   </ItemGroup>
   <ItemGroup>
