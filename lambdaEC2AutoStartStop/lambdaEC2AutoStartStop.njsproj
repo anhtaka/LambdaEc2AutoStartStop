@@ -45,6 +45,7 @@
     <Content Include="_sampleEvent.json" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include=".circleci\" />
     <Folder Include="typings\" />
     <Folder Include="typings\globals\" />
     <Folder Include="typings\globals\async\" />
