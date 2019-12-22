@@ -10,7 +10,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": ""
+    "test": "",
+    "coverage": "nyc npm run test"
   },
   "author": "",
   "license": "ISC"
