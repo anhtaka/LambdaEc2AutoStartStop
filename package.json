@@ -10,7 +10,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "npm run lint && npm run cover"
+    "test": ""
   },
   "author": "",
   "license": "ISC"
