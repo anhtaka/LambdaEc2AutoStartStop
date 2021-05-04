@@ -156,7 +156,7 @@ function getDateValue(instance, tagName, vnowhhmm) {
     instance.Tags.forEach(function (tag) {
         if (tag.Key === tagName) tagValue = tag.Value;
     });
-    if (!(validValue(tagName, tagValue))) return "";
+    if (!(validValue(tagName, tagValue))) return "99:99";    //not suppoet format all return "99:99"
     //var now = NOWDATE;//getNow();
     //var month = now.get('month') + 1;
     //var value = moment(now.get('year') + '-' + month + '-' + now.get('date') + ' ' +

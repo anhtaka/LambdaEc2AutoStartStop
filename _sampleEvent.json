@@ -9,7 +9,7 @@
       "userIdentity": {
         "principalId": "AIDAJDPLRKLG7UEXAMPLE"
       },
-      "requestParameters": {
+      "requestParameters": {n
         "sourceIPAddress": "127.0.0.1"
       },
       "responseElements": {
