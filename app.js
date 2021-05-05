@@ -7,6 +7,7 @@ var request = require('sync-request');
 aws.config.update({ region: 'ap-northeast-1' });        //Tokyo
 var NOWDATE;
 var getUrl = 'https://anhtaka.github.io/holiday-node/holiday-main.json';
+const AryHoliday = [];
 
 function getHour(value) {
     return value.split(":", 2)[0];
@@ -239,7 +240,7 @@ function getMinute10(value) {
     console.log("check getMinute10 = " + hour + ":" + min + "");
     return hour + ":" + min;
 }
-
+/* get Holiday Json list */
 function httpGet(url){
     var response = request('GET',url);
     console.log("Status Code (function) : "+response.statusCode);
@@ -249,6 +250,7 @@ function httpGet(url){
     for (item in obj.holiday) {
         AryHoliday.push(obj.holiday[item].DATA);
     }
+    console.log("AryHoliday="+AryHoliday);
     return response.statusCode;
   }
 /*  input:yyyy-mm-dd  */
