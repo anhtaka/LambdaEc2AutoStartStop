@@ -1,10 +1,13 @@
 ﻿var aws = require('aws-sdk');
 var moment = require("moment");
-var async = require('async');
+//var async = require('async');
+var request = require('sync-request');
 //console.log('Loading');
 
 aws.config.update({ region: 'ap-northeast-1' });        //Tokyo
 var NOWDATE;
+var getUrl = 'https://anhtaka.github.io/holiday-node/holiday-main.json';
+const AryHoliday = [];
 
 function getHour(value) {
     return value.split(":", 2)[0];
@@ -165,13 +168,16 @@ function getDateValue(instance, tagName, vnowhhmm) {
 
     //AutoStart-----------------------------
     if (tagName === "AutoStart") {
-        if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
+        //if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
+        if (chkHolidayHoliday(NOWDATE) === 0) {
+            //not holiday
             if (tagValue === "1") {
                 tagValue = "08:30";
             } else if (tagValue === "0") {
                 tagValue = "99:99";
             }
         } else {
+            //holiday
             //don't exec starday,sunday
             tagValue = "99:99";
         }
@@ -234,20 +240,60 @@ function getMinute10(value) {
     console.log("check getMinute10 = " + hour + ":" + min + "");
     return hour + ":" + min;
 }
+/* get Holiday Json list */
+function httpGet(url){
+    var response = request('GET',url);
+    console.log("Status Code (function) : "+response.statusCode);
+
+    var item;
+    var obj = JSON.parse(response.getBody('utf8'));
+    for (item in obj.holiday) {
+        AryHoliday.push(obj.holiday[item].DATA);
+    }
+    console.log("AryHoliday="+AryHoliday);
+    return response.statusCode;
+  }
+/*  input:yyyy-mm-dd  */
+function chkHolidayHoliday(valueDate) {
+    var hFlg = 0;
+    //holiday検索
+    var a = AryHoliday.indexOf(valueDate.format('YYYY-MM-DD'));
+    if(a == -1){
+        //check week
+        switch (valueDate.format('dddd')) {
+            case 'Monday':
+            case 'Tuesday':
+            case 'Wednesday':
+            case 'Thursday':
+            case 'Friday':
+                hFlg =  0; 
+                break;
+            case 'Saturday':
+            case 'Sunday':
+                hFlg = 1;
+                break;
+        }
+    }else{
+        hFlg = 1; //holiday
+    }
+    return hFlg
+}
+
 //-----------------------------------------------------------
 // main
 //-----------------------------------------------------------
 exports.handler = function (event, context) {
     console.log("-----------------start.-----------------");
-    NOWDATE = getNow();
+    NOWDATE = getNow(); //now date
+    var returnHttpCode = httpGet(getUrl);  //getholiday json
 
+    console.log("returnHttpCode=" + returnHttpCode);
     console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm dddd Z'));
-    if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
+    /*if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
         console.log("checkweekMonFri = Mon-Fri");
-        //return "";
     } else {
         console.log("checkweekMonFri = Sat-Sun");
-    }
+    }*/
 
     //nowdate = getNow();
     var ec2 = new aws.EC2();
