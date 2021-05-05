@@ -241,17 +241,15 @@ function getMinute10(value) {
 }
 
 function httpGet(url){
-    var response = request(
-      'GET',
-      url
-      );
-      console.log("Status Code (function) : "+response.statusCode);
-  
-      var obj = JSON.parse(response.getBody('utf8'));
-      for (item in obj.holiday) {
-          AryHoliday.push(obj.holiday[item].DATA);
-      }
-      return response.statusCode;
+    var response = request('GET',url);
+    console.log("Status Code (function) : "+response.statusCode);
+
+    var item;
+    var obj = JSON.parse(response.getBody('utf8'));
+    for (item in obj.holiday) {
+        AryHoliday.push(obj.holiday[item].DATA);
+    }
+    return response.statusCode;
   }
 /*  input:yyyy-mm-dd  */
 function chkHolidayHoliday(valueDate) {
