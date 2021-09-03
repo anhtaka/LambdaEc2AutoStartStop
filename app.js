@@ -153,7 +153,17 @@ function getNow() {
     return moment().utcOffset("+09:00");
 }
 
-function getDateValue(instance, tagName, vnowhhmm) {
+function getDayOffBootFlg(instance, tagName){
+    var tagValue = "";
+    instance.Tags.forEach(function (tag) {
+        if (tag.Key === tagName) tagValue = tag.Value;
+    });
+
+    console.log(tagName + " = " + tagValue);
+    return tagValue;
+}
+
+function getDateValue(instance, tagName, vnowhhmm, dayoff) {
     var value = "";
     var tagValue = "";
     instance.Tags.forEach(function (tag) {
@@ -169,7 +179,7 @@ function getDateValue(instance, tagName, vnowhhmm) {
     //AutoStart-----------------------------
     if (tagName === "AutoStart") {
         //if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
-        if (chkHolidayHoliday(NOWDATE) === 0) {
+        if (chkHolidayHoliday(NOWDATE) === 0 || dayoff === "1") {
             //not holiday
             if (tagValue === "1") {
                 tagValue = "08:30";
@@ -329,7 +339,8 @@ exports.handler = function (event, context) {
                     var instance = instances[j];
                     var serName = getTagValue(instance, 'Name'); //--Start
                     console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
-                    var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
+                    var dayoff = getDayOffBootFlg(instance, 'DayOffBoot')
+                    var start = getDateValue(instance, 'AutoStart', nowhhmm, dayoff); //--Start
                     var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
                     if (start != "" && end != "") {
                         var result = handleInstance(instance.State.Name, start, end, nowhhmm);
