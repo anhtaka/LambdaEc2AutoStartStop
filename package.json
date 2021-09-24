@@ -1,6 +1,7 @@
 {
   "name": "lambdaec2",
   "version": "1.0.0",
+  "repository": "lambdaec2",
   "description": "To be completed - getting started text for the new project.",
   "main": "app.js",
   "dependencies": {
