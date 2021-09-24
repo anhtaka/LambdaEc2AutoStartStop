@@ -339,7 +339,7 @@ exports.handler = function (event, context) {
                     var instance = instances[j];
                     var serName = getTagValue(instance, 'Name'); //--Start
                     console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
-                    var dayoff = getDayOffBootFlg(instance, 'DayOffBoot')
+                    var dayoff = getDayOffBootFlg(instance, 'DayOffBoot');
                     var start = getDateValue(instance, 'AutoStart', nowhhmm, dayoff); //--Start
                     var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
                     if (start != "" && end != "") {
