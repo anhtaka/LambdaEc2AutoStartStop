@@ -6,7 +6,14 @@ EC2 AutoStartStop From Lambda node.js
 
 # 概要
 
-# lambda awsでの設定の仕方
+# set up Lambda 
+
+```cmd
+git clone APP_URL
+npm install / update
+zip -rq UPFIE_NAME.zip node_modules/ app.js
+```
+up file to Lambda
 
 # 今後の修正予定
 
