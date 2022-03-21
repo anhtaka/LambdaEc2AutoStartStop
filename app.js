@@ -1,25 +1,25 @@
-﻿var aws = require('aws-sdk');
-var moment = require('moment');
+﻿var aws = require("aws-sdk");
+var moment = require("moment");
 //var async = require('async');
-var request = require('sync-request');
+var request = require("sync-request");
 //console.log('Loading');
 
-aws.config.update({ region: 'ap-northeast-1' });        //Tokyo
+aws.config.update({ region: "ap-northeast-1" });        //Tokyo
 var NOWDATE;
-var getUrl = 'https://anhtaka.github.io/holiday-node/holiday-main.json';
+var getUrl = "https://anhtaka.github.io/holiday-node/holiday-main.json";
 const AryHoliday = [];
 
 function getHour(value) {
-    return value.split(':', 2)[0];
+    return value.split(":", 2)[0];
 }
 
 function getMinute(value) {
-    return value.split(':', 2)[1];
+    return value.split(":", 2)[1];
 }
 
 
 function stopInstance(ec2, instanceId) {
-    console.log('stop EC2. id = ' + instanceId);
+    console.log("stop EC2. id = " + instanceId);
     var params = {
         InstanceIds: [
             instanceId
@@ -27,13 +27,13 @@ function stopInstance(ec2, instanceId) {
     };
     ec2.stopInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
-        else console.log('stop success. instance id = ' + instanceId);
+        else console.log("stop success. instance id = " + instanceId);
         //callback();
     });
 }
 
 function startInstance(ec2, instanceId) {
-    console.log('start EC2. id = ' + instanceId);
+    console.log("start EC2. id = " + instanceId);
     var params = {
         InstanceIds: [
             instanceId
@@ -41,7 +41,7 @@ function startInstance(ec2, instanceId) {
     };
     ec2.startInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
-        else console.log('start success. instance id = ' + instanceId);
+        else console.log("start success. instance id = " + instanceId);
         //callback();
     });
 }
@@ -54,24 +54,24 @@ function handleInstance(state, start, end, nowhhmm) {
     //var now = NOWDATE;
 
     if (start === nowhhmm) {
-        console.log('running time');
-        if (state === 'stopped') {
-            return 'start';
+        console.log("running time");
+        if (state === "stopped") {
+            return "start";
         } else {
-            console.log('state = ' + state + '. nothing');
-            return 'nothing';
+            console.log("state = " + state + ". nothing");
+            return "nothing";
         }
     } else if (end === nowhhmm) {
-        console.log('stopping time');
-        if (state === 'running') {
-            return 'stop';
+        console.log("stopping time");
+        if (state === "running") {
+            return "stop";
         } else {
-            console.log('state = ' + state + '. nothing');
-            return 'nothing';
+            console.log("state = " + state + ". nothing");
+            return "nothing";
         }
     } else {
-        console.log('nothing');
-        return 'nothing';
+        console.log("nothing");
+        return "nothing";
     }
 
     /*
@@ -102,29 +102,29 @@ function handleInstance(state, start, end, nowhhmm) {
 function validValue(key, value) {
     // null
     if (!value) {
-        console.log(key + ' = null or undefined');
+        console.log(key + " = null or undefined");
         return false;
     }
     // 0:nothing 1:decided start end time
-    if (value === '0' || value === '1') {
+    if (value === "0" || value === "1") {
         return true;
     }
 
     // format
     if (!(value.match(/^[0-9]{1,2}:[0-9][0-9]$/))) {
-        console.log('not support format. ' + key + ' = ' + value);
+        console.log("not support format. " + key + " = " + value);
         return false;
     }
 
     // hour
     if (24 < getHour(value) || 0 > getHour(value)) {
-        console.log('not support format(hour). ' + key + ' = ' + value);
+        console.log("not support format(hour). " + key + " = " + value);
         return false;
     }
 
     // minute
     if (60 < getMinute(value) || 0 > getMinute(value)) {
-        console.log('not support format(minute). ' + key + ' = ' + value);
+        console.log("not support format(minute). " + key + " = " + value);
         return false;
     }
 
@@ -150,26 +150,26 @@ function checkweekMonFri(value) {
 */
 function getNow() {
     //console.log("TEST");
-    return moment().utcOffset('+09:00');
+    return moment().utcOffset("+09:00");
 }
 
 function getDayOffBootFlg(instance, tagName){
-    var tagValue = '';
+    var tagValue = "";
     instance.Tags.forEach(function (tag) {
         if (tag.Key === tagName) tagValue = tag.Value;
     });
 
-    console.log(tagName + ' = ' + tagValue);
+    console.log(tagName + " = " + tagValue);
     return tagValue;
 }
 
 function getDateValue(instance, tagName, vnowhhmm, dayoff) {
-    var value = '';
-    var tagValue = '';
+    var value = "";
+    var tagValue = "";
     instance.Tags.forEach(function (tag) {
         if (tag.Key === tagName) tagValue = tag.Value;
     });
-    if (!(validValue(tagName, tagValue))) return '99:99';    //not suppoet format all return "99:99"
+    if (!(validValue(tagName, tagValue))) return "99:99";    //not suppoet format all return "99:99"
     //var now = NOWDATE;//getNow();
     //var month = now.get('month') + 1;
     //var value = moment(now.get('year') + '-' + month + '-' + now.get('date') + ' ' +
@@ -177,41 +177,41 @@ function getDateValue(instance, tagName, vnowhhmm, dayoff) {
     //console.log(tagName + " = " + value.format());
 
     //AutoStart-----------------------------
-    if (tagName === 'AutoStart') {
+    if (tagName === "AutoStart") {
         //if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
-        if (chkHolidayHoliday(NOWDATE) === 0 || dayoff === '1') {
+        if (chkHolidayHoliday(NOWDATE) === 0 || dayoff === "1") {
             //not holiday
-            if (tagValue === '1') {
-                tagValue = '08:30';
-            } else if (tagValue === '0') {
-                tagValue = '99:99';
+            if (tagValue === "1") {
+                tagValue = "08:30";
+            } else if (tagValue === "0") {
+                tagValue = "99:99";
             }
         } else {
             //holiday
             //don't exec starday,sunday
-            tagValue = '99:99';
+            tagValue = "99:99";
         }
     }
     //AutoStop-----------------------------
-    if (tagName === 'AutoStop') {
-        if (tagValue === '1') {
-            if (vnowhhmm === '23:00') {
-                tagValue = '23:00';
+    if (tagName === "AutoStop") {
+        if (tagValue === "1") {
+            if (vnowhhmm === "23:00") {
+                tagValue = "23:00";
             } else {
-                tagValue = '20:00';
+                tagValue = "20:00";
             }
-        } else if (tagValue === '0') {
-            tagValue = '99:99';
+        } else if (tagValue === "0") {
+            tagValue = "99:99";
         }
     }
 
-    console.log(tagName + ' = ' + tagValue);
+    console.log(tagName + " = " + tagValue);
     value = tagValue;
     return value;
 }
 function getTagValue(instance, tagName) {
     //var value = '';
-    var tagValue = '';
+    var tagValue = "";
     instance.Tags.forEach(function (tag) {
         if (tag.Key === tagName) tagValue = tag.Value;
     });
@@ -222,8 +222,8 @@ function getTagValue(instance, tagName) {
 
 
 function getMinute10(value) {
-    console.log('getMinute10 from');
-    var now = value.format('HH:mm');
+    console.log("getMinute10 from");
+    var now = value.format("HH:mm");
     //console.log(now);
     //now = "9:12";
     var hour = getHour(now);
@@ -231,55 +231,55 @@ function getMinute10(value) {
     var vmin = getMinute(now);
     var intmin = Number(vmin); //change int
 
-    var min = '00';
+    var min = "00";
     //console.log("min = " + smin);
     if (intmin < 10) {
-        min = '00';
+        min = "00";
     } else if (intmin < 20) {
-        min = '10';
+        min = "10";
     } else if (intmin < 30) {
-        min = '20';
+        min = "20";
     } else if (intmin < 40) {
-        min = '30';
+        min = "30";
     } else if (intmin < 50) {
-        min = '40';
+        min = "40";
     } else if (intmin < 60) {
-        min = '50';
+        min = "50";
     }
 
-    console.log('check getMinute10 = ' + hour + ':' + min + '');
-    return hour + ':' + min;
+    console.log("check getMinute10 = " + hour + ":" + min + "");
+    return hour + ":" + min;
 }
 /* get Holiday Json list */
 function httpGet(url){
-    var response = request('GET',url);
-    console.log('Status Code (function) : '+response.statusCode);
+    var response = request("GET",url);
+    console.log("Status Code (function) : "+response.statusCode);
 
     var item;
-    var obj = JSON.parse(response.getBody('utf8'));
+    var obj = JSON.parse(response.getBody("utf8"));
     for (item in obj.holiday) {
         AryHoliday.push(obj.holiday[item].DATA);
     }
-    console.log('AryHoliday='+AryHoliday);
+    console.log("AryHoliday="+AryHoliday);
     return response.statusCode;
 }
 /*  input:yyyy-mm-dd  */
 function chkHolidayHoliday(valueDate) {
     var hFlg = 0;
     //holiday検索
-    var a = AryHoliday.indexOf(valueDate.format('YYYY-MM-DD'));
+    var a = AryHoliday.indexOf(valueDate.format("YYYY-MM-DD"));
     if(a == -1){
         //check week
-        switch (valueDate.format('dddd')) {
-        case 'Monday':
-        case 'Tuesday':
-        case 'Wednesday':
-        case 'Thursday':
-        case 'Friday':
+        switch (valueDate.format("dddd")) {
+        case "Monday":
+        case "Tuesday":
+        case "Wednesday":
+        case "Thursday":
+        case "Friday":
             hFlg =  0; 
             break;
-        case 'Saturday':
-        case 'Sunday':
+        case "Saturday":
+        case "Sunday":
             hFlg = 1;
             break;
         }
@@ -293,12 +293,12 @@ function chkHolidayHoliday(valueDate) {
 // main
 //-----------------------------------------------------------
 exports.handler = function (event, context) {
-    console.log('-----------------start.-----------------');
+    console.log("-----------------start.-----------------");
     NOWDATE = getNow(); //now date
     var returnHttpCode = httpGet(getUrl);  //getholiday json
 
-    console.log('returnHttpCode=' + returnHttpCode);
-    console.log('NOWDATE=' + NOWDATE.format('YYYY-MM-DD HH:mm dddd Z'));
+    console.log("returnHttpCode=" + returnHttpCode);
+    console.log("NOWDATE=" + NOWDATE.format("YYYY-MM-DD HH:mm dddd Z"));
     /*if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
         console.log("checkweekMonFri = Mon-Fri");
     } else {
@@ -325,10 +325,10 @@ exports.handler = function (event, context) {
         ]
     };
     */
-    params = ''; //全てのインスタンスに対して実行
+    params = ""; //全てのインスタンスに対して実行
     ec2.describeInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
-        else if (data.Reservations.length == 0) console.log('don\'t find ec2');
+        else if (data.Reservations.length == 0) console.log("don't find ec2");
         else {
             //console.log(data);
             for (var i = 0; i < data.Reservations.length; i++) {
@@ -336,28 +336,28 @@ exports.handler = function (event, context) {
                 var instances = res.Instances;
                 for (var j = 0; j < instances.length; j++) {
                     var instanceID = instances[j].InstanceId;
-                    console.log('instance ' + instanceID);
+                    console.log("instance " + instanceID);
 
                     var instance = instances[j];
-                    var serName = getTagValue(instance, 'Name'); //--Start
-                    console.log('check instance(id = ' + instance.InstanceId + '(' + serName + ')');
-                    var dayoff = getDayOffBootFlg(instance, 'DayOffBoot');
-                    var start = getDateValue(instance, 'AutoStart', nowhhmm, dayoff); //--Start
-                    var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
-                    if (start != '' && end != '') {
+                    var serName = getTagValue(instance, "Name"); //--Start
+                    console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
+                    var dayoff = getDayOffBootFlg(instance, "DayOffBoot");
+                    var start = getDateValue(instance, "AutoStart", nowhhmm, dayoff); //--Start
+                    var end = getDateValue(instance, "AutoStop", nowhhmm); //--End
+                    if (start != "" && end != "") {
                         var result = handleInstance(instance.State.Name, start, end, nowhhmm);
-                        if (result === 'start') {
+                        if (result === "start") {
                             startInstance(ec2, instances[j].InstanceId);
-                        } else if (result === 'stop') {
+                        } else if (result === "stop") {
                             stopInstance(ec2, instances[j].InstanceId);
                         } else {
-                            console.log('check handleInstance(message) = ' + result + ')');
+                            console.log("check handleInstance(message) = " + result + ")");
                             //callback();
                         }
                     }
                 }
             }
-            console.log('-----------------all done.-----------------');
+            console.log("-----------------all done.-----------------");
             //---------------------------
             //async.forEach(data.Reservations, function (reservation, callback) {
             //    var instance = reservation.Instances[0];
