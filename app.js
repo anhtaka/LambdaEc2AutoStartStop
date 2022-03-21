@@ -210,7 +210,7 @@ function getDateValue(instance, tagName, vnowhhmm, dayoff) {
     return value;
 }
 function getTagValue(instance, tagName) {
-    //var value = '';
+    //var value = "";
     var tagValue = "";
     instance.Tags.forEach(function (tag) {
         if (tag.Key === tagName) tagValue = tag.Value;
