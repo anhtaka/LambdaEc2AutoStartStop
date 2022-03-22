@@ -1,12 +1,12 @@
-﻿var aws = require('aws-sdk');
+﻿var aws = require("aws-sdk");
 var moment = require("moment");
 //var async = require('async');
-var request = require('sync-request');
+var request = require("sync-request");
 //console.log('Loading');
 
-aws.config.update({ region: 'ap-northeast-1' });        //Tokyo
+aws.config.update({ region: "ap-northeast-1" });        //Tokyo
 var NOWDATE;
-var getUrl = 'https://anhtaka.github.io/holiday-node/holiday-main.json';
+var getUrl = "https://anhtaka.github.io/holiday-node/holiday-main.json";
 const AryHoliday = [];
 
 function getHour(value) {
@@ -130,24 +130,24 @@ function validValue(key, value) {
 
     return true;
 }
-
+/*
 function checkweekMonFri(value) {
     var flg = 0;
     switch (value) {
-        case 'Monday':
-        case 'Tuesday':
-        case 'Wednesday':
-        case 'Thursday':
-        case 'Friday':
-            //console.log("checkweekMonFri = Mon-Fri");
-            return 1;
-        case 'Saturday':
-        case 'Sunday':
-            //console.log("checkweekMonFri = Sat-Sun");
-            return 0;
+    case 'Monday':
+    case 'Tuesday':
+    case 'Wednesday':
+    case 'Thursday':
+    case 'Friday':
+        //console.log("checkweekMonFri = Mon-Fri");
+        return 1;
+    case 'Saturday':
+    case 'Sunday':
+        //console.log("checkweekMonFri = Sat-Sun");
+        return 0;
     }
 }
-
+*/
 function getNow() {
     //console.log("TEST");
     return moment().utcOffset("+09:00");
@@ -210,7 +210,7 @@ function getDateValue(instance, tagName, vnowhhmm, dayoff) {
     return value;
 }
 function getTagValue(instance, tagName) {
-    var value = "";
+    //var value = "";
     var tagValue = "";
     instance.Tags.forEach(function (tag) {
         if (tag.Key === tagName) tagValue = tag.Value;
@@ -222,7 +222,7 @@ function getTagValue(instance, tagName) {
 
 
 function getMinute10(value) {
-    console.log('getMinute10 from');
+    console.log("getMinute10 from");
     var now = value.format("HH:mm");
     //console.log(now);
     //now = "9:12";
@@ -252,41 +252,41 @@ function getMinute10(value) {
 }
 /* get Holiday Json list */
 function httpGet(url){
-    var response = request('GET',url);
+    var response = request("GET",url);
     console.log("Status Code (function) : "+response.statusCode);
 
     var item;
-    var obj = JSON.parse(response.getBody('utf8'));
+    var obj = JSON.parse(response.getBody("utf8"));
     for (item in obj.holiday) {
         AryHoliday.push(obj.holiday[item].DATA);
     }
     console.log("AryHoliday="+AryHoliday);
     return response.statusCode;
-  }
+}
 /*  input:yyyy-mm-dd  */
 function chkHolidayHoliday(valueDate) {
     var hFlg = 0;
     //holiday検索
-    var a = AryHoliday.indexOf(valueDate.format('YYYY-MM-DD'));
+    var a = AryHoliday.indexOf(valueDate.format("YYYY-MM-DD"));
     if(a == -1){
         //check week
-        switch (valueDate.format('dddd')) {
-            case 'Monday':
-            case 'Tuesday':
-            case 'Wednesday':
-            case 'Thursday':
-            case 'Friday':
-                hFlg =  0; 
-                break;
-            case 'Saturday':
-            case 'Sunday':
-                hFlg = 1;
-                break;
+        switch (valueDate.format("dddd")) {
+        case "Monday":
+        case "Tuesday":
+        case "Wednesday":
+        case "Thursday":
+        case "Friday":
+            hFlg =  0; 
+            break;
+        case "Saturday":
+        case "Sunday":
+            hFlg = 1;
+            break;
         }
     }else{
         hFlg = 1; //holiday
     }
-    return hFlg
+    return hFlg;
 }
 
 //-----------------------------------------------------------
@@ -298,7 +298,7 @@ exports.handler = function (event, context) {
     var returnHttpCode = httpGet(getUrl);  //getholiday json
 
     console.log("returnHttpCode=" + returnHttpCode);
-    console.log("NOWDATE=" + NOWDATE.format('YYYY-MM-DD HH:mm dddd Z'));
+    console.log("NOWDATE=" + NOWDATE.format("YYYY-MM-DD HH:mm dddd Z"));
     /*if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
         console.log("checkweekMonFri = Mon-Fri");
     } else {
@@ -308,8 +308,10 @@ exports.handler = function (event, context) {
     //nowdate = getNow();
     var ec2 = new aws.EC2();
     var nowhhmm = getMinute10(NOWDATE);
-
+    var params;
+    
     //debug
+    /*
     params = {
         Filters: [
             {
@@ -322,8 +324,8 @@ exports.handler = function (event, context) {
             },
         ]
     };
-
-    params = "" //全てのインスタンスに対して実行
+    */
+    params = ""; //全てのインスタンスに対して実行
     ec2.describeInstances(params, function (err, data) {
         if (err) console.log(err, err.stack);
         else if (data.Reservations.length == 0) console.log("don't find ec2");
@@ -334,14 +336,14 @@ exports.handler = function (event, context) {
                 var instances = res.Instances;
                 for (var j = 0; j < instances.length; j++) {
                     var instanceID = instances[j].InstanceId;
-                    console.log('instance ' + instanceID);
+                    console.log("instance " + instanceID);
 
                     var instance = instances[j];
-                    var serName = getTagValue(instance, 'Name'); //--Start
+                    var serName = getTagValue(instance, "Name"); //--Start
                     console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
-                    var dayoff = getDayOffBootFlg(instance, 'DayOffBoot');
-                    var start = getDateValue(instance, 'AutoStart', nowhhmm, dayoff); //--Start
-                    var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
+                    var dayoff = getDayOffBootFlg(instance, "DayOffBoot");
+                    var start = getDateValue(instance, "AutoStart", nowhhmm, dayoff); //--Start
+                    var end = getDateValue(instance, "AutoStop", nowhhmm); //--End
                     if (start != "" && end != "") {
                         var result = handleInstance(instance.State.Name, start, end, nowhhmm);
                         if (result === "start") {
@@ -355,7 +357,7 @@ exports.handler = function (event, context) {
                     }
                 }
             }
-            console.log('-----------------all done.-----------------');
+            console.log("-----------------all done.-----------------");
             //---------------------------
             //async.forEach(data.Reservations, function (reservation, callback) {
             //    var instance = reservation.Instances[0];
