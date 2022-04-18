@@ -7,7 +7,7 @@
   "dependencies": {
     "async": "^3.2.3",
     "aws-sdk": "^2.1092.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.3",
     "sync-request": "^6.1.0"
   },
   "devDependencies": {},
