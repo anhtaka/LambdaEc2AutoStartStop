@@ -5,3 +5,4 @@ services:
     volumes:
       - .:/app
     tty: true
+    working_dir: /app
