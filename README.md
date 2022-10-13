@@ -15,6 +15,14 @@ zip -rq UPFIE_NAME.zip node_modules/ app.js
 ```
 up file to Lambda
 
+for Docker
+```cmd
+docker-compose up
+docker-compose run app npm install
+docker-compose run app zip -rq UPFIE_NAME.zip node_modules/ app.js
+```
+
+
 # 今後の修正予定
 
 # 参考サイト
