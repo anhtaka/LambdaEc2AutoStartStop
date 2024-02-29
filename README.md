@@ -19,7 +19,7 @@ for Docker
 ```cmd
 docker-compose up
 docker-compose run app npm install
-docker-compose run app zip -rq UPFIE_NAME.zip node_modules/ app.js
+docker-compose run app zip -rq UPFILE_NAME.zip node_modules/ app.js
 ```
 
 
