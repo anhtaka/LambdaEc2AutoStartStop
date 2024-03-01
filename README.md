@@ -4,9 +4,9 @@
 
 EC2 AutoStartStop From Lambda node.js
 
-# 概要
+# Overview
 
-# set up Lambda 
+# Set up Lambda 
 
 ```cmd
 git clone APP_URL
@@ -22,8 +22,5 @@ docker-compose run app npm install
 docker-compose run app zip -rq UPFILE_NAME.zip node_modules/ app.js
 ```
 
-
-# 今後の修正予定
-
-# 参考サイト
+# Reference rhinoceros (Diceros bicornis)
 http://qiita.com/toshihirock/items/83c15c35562bed170fe4#%E7%B5%90%E8%AB%96
