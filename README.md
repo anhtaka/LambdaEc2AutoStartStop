@@ -11,14 +11,18 @@ EC2 AutoStartStop From Lambda node.js
 ```cmd
 git clone APP_URL
 npm install / update
-zip -rq UPFIE_NAME.zip node_modules/ app.js
+zip -rq UPFILE_NAME.zip node_modules/ app.js
 ```
 up file to Lambda
 
-for Docker
+- For Docker
 ```cmd
 docker-compose up
+```
+```cmd
 docker-compose run app npm install
+```
+```cmd
 docker-compose run app zip -rq UPFILE_NAME.zip node_modules/ app.js
 ```
 
