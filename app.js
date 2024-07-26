@@ -267,9 +267,13 @@ function httpGet(url){
 /*  getHoliday  */
 function getHoliday(){
     const holidayString = process.env.holidaylist;
+    if (!holidayString) {  
+        console.error("Environment variable 'holidaylist' is missing.");  
+        return;  
+    } 
     // 文字列から余分なシングルクォーテーションを削除し、カンマで分割して配列に変換
     const  tmp = holidayString
-      .split(', ') // カンマとスペースで分割
+      .split(',') // カンマとスペースで分割
       .map(date => date.trim()); // 余分な空白を削除
     
     AryHoliday.push(...tmp);
