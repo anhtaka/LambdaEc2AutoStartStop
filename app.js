@@ -312,11 +312,8 @@ exports.handler = function (event, context) {
     console.log("-----------------start.-----------------");
     NOWDATE = getNow(); //now date
 
-    //var returnHttpCode = httpGet(getUrl);  //getholiday json
     getHoliday();
     console.log('全データ:', AryHoliday);
-
-    //console.log("returnHttpCode=" + returnHttpCode);
     console.log("NOWDATE=" + NOWDATE.format("YYYY-MM-DD HH:mm dddd Z"));
     /*if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
         console.log("checkweekMonFri = Mon-Fri");
