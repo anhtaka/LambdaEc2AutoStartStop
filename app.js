@@ -273,7 +273,7 @@ function getHoliday(){
     } 
     // 文字列から余分なシングルクォーテーションを削除し、カンマで分割して配列に変換
     const  tmp = holidayString
-      .split(',') // Split by comma (removed space from comment)
+      .split(',') // Split by comma
       .map(date => date.trim()); // 余分な空白を削除
     
     AryHoliday.push(...tmp);
