@@ -1,12 +1,11 @@
 ﻿var aws = require("aws-sdk");
 var moment = require("moment");
 //var async = require('async');
-var request = require("sync-request");
-//console.log('Loading');
+//var request = require("sync-request");
 
 aws.config.update({ region: "ap-northeast-1" });        //Tokyo
 var NOWDATE;
-var getUrl = "https://anhtaka.github.io/holiday-node/holiday-main.json";
+//var getUrl = "https://anhtaka.github.io/holiday-node/holiday-main.json";
 const AryHoliday = [];
 
 function getHour(value) {
@@ -251,6 +250,7 @@ function getMinute10(value) {
     return hour + ":" + min;
 }
 /* get Holiday Json list */
+/*
 function httpGet(url){
     var response = request("GET",url);
     console.log("Status Code (function) : "+response.statusCode);
@@ -262,6 +262,22 @@ function httpGet(url){
     }
     console.log("AryHoliday="+AryHoliday);
     return response.statusCode;
+}
+*/
+/*  getHoliday  */
+function getHoliday(){
+    const holidayString = process.env.holidaylist;
+    if (!holidayString) {  
+        console.error("Environment variable 'holidaylist' is missing.");  
+        return;  
+    } 
+    // 文字列から余分なシングルクォーテーションを削除し、カンマで分割して配列に変換
+    const  tmp = holidayString
+      .split(',') // Split by comma
+      .map(date => date.trim()); // 余分な空白を削除
+    
+    AryHoliday.push(...tmp);
+  
 }
 /*  input:yyyy-mm-dd  */
 function chkHolidayHoliday(valueDate) {
@@ -295,9 +311,9 @@ function chkHolidayHoliday(valueDate) {
 exports.handler = function (event, context) {
     console.log("-----------------start.-----------------");
     NOWDATE = getNow(); //now date
-    var returnHttpCode = httpGet(getUrl);  //getholiday json
 
-    console.log("returnHttpCode=" + returnHttpCode);
+    getHoliday();
+    console.log('全データ:', AryHoliday);
     console.log("NOWDATE=" + NOWDATE.format("YYYY-MM-DD HH:mm dddd Z"));
     /*if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
         console.log("checkweekMonFri = Mon-Fri");
@@ -358,44 +374,6 @@ exports.handler = function (event, context) {
                 }
             }
             console.log("-----------------all done.-----------------");
-            //---------------------------
-            //async.forEach(data.Reservations, function (reservation, callback) {
-            //    var instance = reservation.Instances[0];
-            //    var serName = getTagValue(instance, 'Name'); //--Start
-            //    console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
-            //    var start = getDateValue(instance, 'AutoStart', nowhhmm); //--Start
-            //    var end = getDateValue(instance, 'AutoStop', nowhhmm); //--End
-            //    if (start != "" && end != "") {
-            //        var result = handleInstance(instance.State.Name, start, end, nowhhmm);
-            //        if (result === "start") {
-            //            startInstance(ec2, instance.InstanceId, function () {
-            //                callback();
-            //            });
-            //        } else if (result === "stop") {
-            //            stopInstance(ec2, instance.InstanceId, function () {
-            //                callback();
-            //            });
-            //        } else {
-            //            console.log("check handleInstance(message) = " + result + ")");
-            //            callback();
-            //        }
-            //    } else {
-            //        callback();
-            //    }
-            //}, function () {
-            //    console.log('-----------------all done.-----------------');
-            //    context.succeed('OK');
-            // });
-            //-----------------------------
         }
     });
-    //if (event != null) {
-    //    console.log('event = ' + JSON.stringify(event));
-    //}
-    //else {
-    //    console.log('No event object');
-
-    //}
-
-    //context.done(null, 'Hello World');  // SUCCESS with message
 };
