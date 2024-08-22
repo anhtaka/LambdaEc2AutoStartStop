@@ -163,31 +163,34 @@ function getDayOffBootFlg(instance, tagName){
 }
 
 function getDateValue(instance, tagName, vnowhhmm, dayoff) {
-    var value = "";
-    var tagValue = "";
-    instance.Tags.forEach(function (tag) {
-        if (tag.Key === tagName) tagValue = tag.Value;
-    });
+    var retValue = "";
+    var tagValue =  getTagValue(instance, tagName); //--Start-Stop
     if (!(validValue(tagName, tagValue))) return "99:99";    //not suppoet format all return "99:99"
-    //var now = NOWDATE;//getNow();
-    //var month = now.get('month') + 1;
-    //var value = moment(now.get('year') + '-' + month + '-' + now.get('date') + ' ' +
-    //    getHour(tagValue) + ':' + getMinute(tagValue) + ' +09:00', 'YYYY-MM-DD HH:mm Z');
-    //console.log(tagName + " = " + value.format());
 
     //AutoStart-----------------------------
     if (tagName === "AutoStart") {
-        //if (checkweekMonFri(NOWDATE.format('dddd')) === 1) {
-        if (chkHolidayHoliday(NOWDATE) === 0 || dayoff === "1") {
+        if (chkHoliday(NOWDATE) === 0 || dayoff === "1") {
             //not holiday
-            if (tagValue === "1") {
-                tagValue = "08:30";
-            } else if (tagValue === "0") {
-                tagValue = "99:99";
+            var autoStartDue = getTagValue(instance, "AutoStartDueDate");
+            if (moment(autoStartDue, 'YYYYMMDD').isValid()){
+                var autoStartDue_DATE = moment(autoStartDue, 'YYYYMMDD');
+                var NOWDATE_DATE = moment(NOWDATE.format('YYYYMMDD'), 'YYYYMMDD');
+                if (NOWDATE_DATE.isAfter(autoStartDue_DATE)) {
+                    tagValue = '99:99';
+                } else {
+                    //not holiday
+                    if (tagValue === "1") {
+                        tagValue = "08:30";
+                    } else if (tagValue === "0") {
+                        tagValue = "99:99";
+                    }
+                }
+            } else {
+                tagValue = '99:99';
             }
         } else {
             //holiday
-            //don't exec starday,sunday
+            //don't execute on Saturday, Sunday
             tagValue = "99:99";
         }
     }
@@ -205,8 +208,8 @@ function getDateValue(instance, tagName, vnowhhmm, dayoff) {
     }
 
     console.log(tagName + " = " + tagValue);
-    value = tagValue;
-    return value;
+    retValue = tagValue;
+    return retValue;
 }
 function getTagValue(instance, tagName) {
     //var value = "";
@@ -280,7 +283,7 @@ function getHoliday(){
   
 }
 /*  input:yyyy-mm-dd  */
-function chkHolidayHoliday(valueDate) {
+function chkHoliday(valueDate) {
     var hFlg = 0;
     //holiday検索
     var a = AryHoliday.indexOf(valueDate.format("YYYY-MM-DD"));
