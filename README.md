@@ -41,25 +41,34 @@ Ensure your Lambda function has an IAM role with the following permissions:
 - **ec2:StopInstances**
 
 
-### 4. Deploy the Lambda Function
-You can deploy the Lambda function using the AWS Management Console or AWS CLI. 
-and 
-Environment variables  key:holidaylist YYYY-MM-DD fomat(e.g.2024-07-15,2024-08-11)
+### 4. the Lambda Function setting
+- 1.You can deploy the Lambda function using the AWS Management Console or AWS CLI. select node.js
+ 
+- 2.Environment variables  key:holidaylist YYYY-MM-DD fomat(e.g.2024-07-15,2024-08-11)
 
-upload to file(UPFILE_NAME.zip).
+- 3.upload to file(UPFILE_NAME.zip).
 
 ### 6.CloudWatch
 For automated scheduling, set up a CloudWatch Event to trigger the Lambda function at your desired intervals.
+
 0/10 Minutes
 
 ### 7. Configure Tags on EC2 Instances
 Add the following tags to the EC2 instances you want to manage:
 
-- **AutoStart**: Set the desired start time in HH:mm format (e.g., 07:00).
-- **AutoStop**: Set the desired stop time in HH:mm format (e.g., 19:00).
+- **AutoStart**: Set the desired start time in HH:mm or 1 or 0 format (e.g., 07:00).
+- **AutoStartDueDate**: Activation valid until the specified date; if blank, activation disabled in  YYYYYMMDD 	format(e.g., 20240725).
+- **AutoStop**: Set the desired stop time in HH:mm or 1 or 0  format (e.g., 19:00).
 - **DayOffBoot**: start server on weekends and holidays in 1:Enabled 0:Disabled format(e.g., 0 or 1)
-- **AutoStartDueDate**:(Activation valid until the specified date; if blank, activation disabled in  YYYYYMMDD 	format(e.g., 20240725)
 
+
+- **e.g.**
+
+| Instance ID   | AutoStart | AutoStartDueDate | AutoStop | DayOffBoot |
+| ------------- | --------- | ---------------- | -------- | ---------- |
+| i-XXXXXXXXXX  | 0         |                  | 1        | 0  |
+| i-XXXXXXXXXX  | 1         | 20241231         | 1        | 0 |
+| i-XXXXXXXXXX  | 1         | 20241231         | 0        | 1 |
 
 The Lambda function will start or stop instances based on these tag values
 
