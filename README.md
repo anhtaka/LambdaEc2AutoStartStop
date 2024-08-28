@@ -41,14 +41,14 @@ Ensure your Lambda function has an IAM role with the following permissions:
 - **ec2:StopInstances**
 
 
-### 4. the Lambda Function setting
+### 4. AWS Lambda Function Setup
 - 1.You can deploy the Lambda function using the AWS Management Console or AWS CLI. select node.js
  
 - 2.Environment variables  key:holidaylist YYYY-MM-DD fomat(e.g.2024-07-15,2024-08-11)
 
 - 3.upload to file(UPFILE_NAME.zip).
 
-### 6.CloudWatch
+### 6.AWS CloudWatch Setup
 For automated scheduling, set up a CloudWatch Event to trigger the Lambda function at your desired intervals.
 
 0/10 Minutes
