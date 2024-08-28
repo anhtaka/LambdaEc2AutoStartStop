@@ -5,7 +5,6 @@
   "description": "To be completed - getting started text for the new project.",
   "main": "app.js",
   "dependencies": {
-    "async": "^3.2.6",
     "aws-sdk": "^2.1684.0",
     "moment": "^2.29.1"
   },
