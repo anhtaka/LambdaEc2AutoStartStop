@@ -1,7 +1,5 @@
 ﻿var aws = require("aws-sdk");
 var moment = require("moment");
-//var async = require('async');
-//var request = require("sync-request");
 
 aws.config.update({ region: "ap-northeast-1" });        //Tokyo
 var NOWDATE;
