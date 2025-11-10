@@ -3,10 +3,14 @@ jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
     working_directory: ~/mern-starter # directory where steps will run
     docker: # run the steps with Docker
-      - image: cimg/node:20.11.0 # ...with this image as the primary container; this is where all `steps` will run
+      - image: cimg/node:20.17.0 # ...with this image as the primary container; this is where all `steps` will run
       - image: mongo:4.2.0 # and this image as the secondary service container
     steps: # a collection of executable commands
-      - checkout # special step to check out source code to working directory
+      # - checkout ← 削除
+      - run:
+          name: Checkout via HTTPS
+          command: |
+            git clone https://github.com/anhtaka/LambdaEc2AutoStartStop.git .
       - run:
           name: update-npm
           command: 'sudo npm install -g npm@latest'
