@@ -24,7 +24,8 @@ async function stopInstance(instanceId) {
         await ec2Client.send(command);
         console.log("stop success. instance id = " + instanceId);
     } catch (err) {
-        console.log(err, err.stack);
+        console.error(err, err.stack);
+        throw err;
     }
 }
 
@@ -38,7 +39,8 @@ async function startInstance(instanceId) {
         await ec2Client.send(command);
         console.log("start success. instance id = " + instanceId);
     } catch (err) {
-        console.log(err, err.stack);
+        console.error(err, err.stack);
+        throw err;
     }
 }
 
@@ -77,11 +79,11 @@ function validValue(key, value) {
         console.log("not support format. " + key + " = " + value);
         return false;
     }
-    if (24 < getHour(value) || 0 > getHour(value)) {
+    if (getHour(value) >= 24 || getHour(value) < 0) {
         console.log("not support format(hour). " + key + " = " + value);
         return false;
     }
-    if (60 < getMinute(value) || 0 > getMinute(value)) {
+    if (getMinute(value) >= 60 || getMinute(value) < 0) {
         console.log("not support format(minute). " + key + " = " + value);
         return false;
     }
@@ -184,12 +186,12 @@ function getMinute10(value) {
 function getHoliday(){
     const holidayString = process.env.holidaylist;
     if (!holidayString) {  
-        console.error("Environment variable 'holidaylist' is missing.");  
-        return;  
+        throw new Error("Environment variable 'holidaylist' is missing.");
     } 
     const tmp = holidayString
       .split(',')
-      .map(date => date.trim());
+      .map(date => date.trim())
+      .filter(Boolean);
     
     AryHoliday.length = 0; // Clear array
     AryHoliday.push(...tmp);
@@ -264,6 +266,7 @@ export const handler = async (event, context) => {
             console.log("-----------------all done.-----------------");
         }
     } catch (err) {
-        console.log(err, err.stack);
+        console.error(err, err.stack);
+        throw err;
     }
 };
