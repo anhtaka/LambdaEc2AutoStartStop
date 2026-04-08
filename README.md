@@ -30,8 +30,14 @@ cd LambdaEc2AutoStartStop
 npm install
 ```
  or npm update
+
+ Archive file
 ```bash
-zip -rq UPFILE_NAME.zip node_modules/ app.js
+Compress-Archive -Path node_modules, app.js,package.json -DestinationPath UPFILE_NAME.zip
+```
+or
+```bash
+zip -rq UPFILE_NAME.zip node_modules/ app.js package.json
 ```
 ### 3. AWS IAM Role Setup
 Ensure your Lambda function has an IAM role with the following permissions:
@@ -94,5 +100,3 @@ docker-compose run app npm install
 ```cmd
 docker-compose run app zip -rq UPFILE_NAME.zip node_modules/ app.js
 ```
-
-

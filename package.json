@@ -4,8 +4,9 @@
   "repository": "lambdaec2",
   "description": "To be completed - getting started text for the new project.",
   "main": "app.js",
+  "type": "module",
   "dependencies": {
-    "aws-sdk": "^2.1693.0",
+    "@aws-sdk/client-ec2": "^3.714.0",
     "moment": "^2.29.1"
   },
   "scripts": {
