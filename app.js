@@ -79,11 +79,14 @@ function validValue(key, value) {
         console.log("not support format. " + key + " = " + value);
         return false;
     }
-    if (getHour(value) >= 24 || getHour(value) < 0) {
+    const hour = Number(getHour(value));
+    const minute = Number(getMinute(value));
+
+    if (hour >= 24 || hour < 0) {
         console.log("not support format(hour). " + key + " = " + value);
         return false;
     }
-    if (getMinute(value) >= 60 || getMinute(value) < 0) {
+    if (minute >= 60 || minute < 0) {
         console.log("not support format(minute). " + key + " = " + value);
         return false;
     }
