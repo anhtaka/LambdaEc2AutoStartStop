@@ -228,6 +228,7 @@ export const handler = async (event, context) => {
         if (!data.Reservations || data.Reservations.length === 0) {
             console.log("don't find ec2");
         } else {
+            const failedInstances = [];
             for (const res of data.Reservations) {
                 const instances = res.Instances;
                 if (!instances) continue;
@@ -255,10 +256,14 @@ export const handler = async (event, context) => {
                         }
                     } catch (err) {
                         console.error("instance " + instance.InstanceId + " failed.", err);
+                        failedInstances.push(instance.InstanceId);
                     }
                 }
             }
             console.log("-----------------all done.-----------------");
+            if (failedInstances.length > 0) {
+                throw new Error(failedInstances.length + " instance(s) failed: " + failedInstances.join(", "));
+            }
         }
     } catch (err) {
         console.error(err, err.stack);
