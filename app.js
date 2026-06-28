@@ -234,25 +234,29 @@ export const handler = async (event, context) => {
                 const instances = res.Instances;
                 if (!instances) continue;
                 for (const instance of instances) {
-                    const instanceID = instance.InstanceId;
-                    console.log("instance " + instanceID);
+                    try {
+                        const instanceID = instance.InstanceId;
+                        console.log("instance " + instanceID);
 
-                    const serName = getTagValue(instance, "Name");
-                    console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
-                    const dayoff = getTagValue(instance, "DayOffBoot");
-                    console.log("DayOffBoot = " + dayoff);
-                    const start = getDateValue(instance, "AutoStart", nowhhmm, dayoff);
-                    const end = getDateValue(instance, "AutoStop", nowhhmm);
-                    
-                    if (start !== "" && end !== "") {
-                        const result = handleInstance(instance.State.Name, start, end, nowhhmm);
-                        if (result === "start") {
-                            await startInstance(instance.InstanceId);
-                        } else if (result === "stop") {
-                            await stopInstance(instance.InstanceId);
-                        } else {
-                            console.log("check handleInstance(message) = " + result + ")");
+                        const serName = getTagValue(instance, "Name");
+                        console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
+                        const dayoff = getTagValue(instance, "DayOffBoot");
+                        console.log("DayOffBoot = " + dayoff);
+                        const start = getDateValue(instance, "AutoStart", nowhhmm, dayoff);
+                        const end = getDateValue(instance, "AutoStop", nowhhmm);
+
+                        if (start !== "" && end !== "") {
+                            const result = handleInstance(instance.State.Name, start, end, nowhhmm);
+                            if (result === "start") {
+                                await startInstance(instance.InstanceId);
+                            } else if (result === "stop") {
+                                await stopInstance(instance.InstanceId);
+                            } else {
+                                console.log("check handleInstance(message) = " + result + ")");
+                            }
                         }
+                    } catch (err) {
+                        console.error("instance " + instance.InstanceId + " failed. " + err, err.stack);
                     }
                 }
             }
