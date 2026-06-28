@@ -97,17 +97,6 @@ function getNow() {
     return moment().utcOffset("+09:00");
 }
 
-function getDayOffBootFlg(instance, tagName){
-    let tagValue = "";
-    if (instance.Tags) {
-        instance.Tags.forEach(function (tag) {
-            if (tag.Key === tagName) tagValue = tag.Value;
-        });
-    }
-    console.log(tagName + " = " + tagValue);
-    return tagValue;
-}
-
 function getTagValue(instance, tagName) {
     let tagValue = "";
     if (instance.Tags) {
@@ -250,7 +239,8 @@ export const handler = async (event, context) => {
 
                     const serName = getTagValue(instance, "Name");
                     console.log("check instance(id = " + instance.InstanceId + "(" + serName + ")");
-                    const dayoff = getDayOffBootFlg(instance, "DayOffBoot");
+                    const dayoff = getTagValue(instance, "DayOffBoot");
+                    console.log("DayOffBoot = " + dayoff);
                     const start = getDateValue(instance, "AutoStart", nowhhmm, dayoff);
                     const end = getDateValue(instance, "AutoStop", nowhhmm);
                     
