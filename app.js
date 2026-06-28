@@ -24,7 +24,6 @@ async function stopInstance(instanceId) {
         await ec2Client.send(command);
         console.log("stop success. instance id = " + instanceId);
     } catch (err) {
-        console.error(err, err.stack);
         throw err;
     }
 }
@@ -39,7 +38,6 @@ async function startInstance(instanceId) {
         await ec2Client.send(command);
         console.log("start success. instance id = " + instanceId);
     } catch (err) {
-        console.error(err, err.stack);
         throw err;
     }
 }
@@ -256,7 +254,7 @@ export const handler = async (event, context) => {
                             }
                         }
                     } catch (err) {
-                        console.error("instance " + instance.InstanceId + " failed. " + err, err.stack);
+                        console.error("instance " + instance.InstanceId + " failed.", err);
                     }
                 }
             }
