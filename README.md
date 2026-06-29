@@ -33,11 +33,11 @@ npm install
 
  Archive file
 ```bash
-Compress-Archive -Path node_modules, app.js,package.json -DestinationPath UPFILE_NAME.zip
+Compress-Archive -Path node_modules, app.js, jstDate.js, package.json -DestinationPath UPFILE_NAME.zip
 ```
 or
 ```bash
-zip -rq UPFILE_NAME.zip node_modules/ app.js package.json
+zip -rq UPFILE_NAME.zip node_modules/ app.js jstDate.js package.json
 ```
 ### 3. AWS IAM Role Setup
 Ensure your Lambda function has an IAM role with the following permissions:
@@ -98,5 +98,5 @@ docker-compose up
 docker-compose run app npm install
 ```
 ```cmd
-docker-compose run app zip -rq UPFILE_NAME.zip node_modules/ app.js
+docker-compose run app zip -rq UPFILE_NAME.zip node_modules/ app.js jstDate.js package.json
 ```

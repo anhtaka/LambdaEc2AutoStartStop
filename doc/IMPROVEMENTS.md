@@ -41,9 +41,9 @@ if (Number(getMinute(value)) >= 60 || Number(getMinute(value)) < 0) { ... }
 
 ---
 
-### 1-4. `moment` の非推奨依存
+### 1-4. `moment` の非推奨依存 ✅ 対応済み
 
-`moment` は現在 maintenance mode（新規開発停止）。軽量な代替として `Day.js` または `@js-joda/core` への移行を推奨。
+`moment` を `jstDate.js`（ネイティブ `Intl.DateTimeFormat` 実装）に置き換え、npm 依存を除去した。
 
 ---
 
@@ -180,6 +180,6 @@ Secrets Manager / Parameter Store 利用のガイドラインを README に明�
 | 中 | 2-1 デフォルト時刻の環境変数化 |
 | 中 | 3-1 SNS 通知 |
 | 中 | 3-2 DryRun モード |
-| 低 | 1-4 moment → Day.js 移行 |
+| ~~低~~ | ~~1-4 moment → Day.js 移行~~ ✅ 対応済み |
 | 低 | 3-3 複数リージョン対応 |
 | 低 | 3-6 IaC テンプレート追加 |
