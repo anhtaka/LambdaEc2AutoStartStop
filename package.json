@@ -6,8 +6,7 @@
   "main": "app.js",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-ec2": "^3.1075.0",
-    "moment": "^2.29.1"
+    "@aws-sdk/client-ec2": "^3.1075.0"
   },
   "scripts": {
     "test": ""

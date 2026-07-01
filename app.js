@@ -1,5 +1,5 @@
 import { EC2Client, DescribeInstancesCommand, StartInstancesCommand, StopInstancesCommand } from "@aws-sdk/client-ec2";
-import moment from "moment";
+import moment from "./jstDate.js";
 
 const ec2Client = new EC2Client(); // Region will be picked up from environment variable AWS_REGION
 
@@ -91,8 +91,17 @@ function validValue(key, value) {
     return true;
 }
 
+function isValidYYYYMMDD(str) {
+    if (!/^\d{8}$/.test(str)) return false;
+    const y = Number(str.slice(0, 4));
+    const m = Number(str.slice(4, 6));
+    const d = Number(str.slice(6, 8));
+    const date = new Date(y, m - 1, d);
+    return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+}
+
 function getNow() {
-    return moment().utcOffset("+09:00");
+    return moment(new Date());
 }
 
 function getTagValue(instance, tagName) {
@@ -112,11 +121,9 @@ function getDateValue(instance, tagName, vnowhhmm, dayoff) {
     if (tagName === "AutoStart") {
         if (chkHoliday(NOWDATE) === 0 || dayoff === "1") {
             const autoStartDue = getTagValue(instance, "AutoStartDueDate");
-            if (moment(autoStartDue, 'YYYYMMDD').isValid()){
-                const autoStartDue_DATE = moment(autoStartDue, 'YYYYMMDD');
-                const NOWDATE_DATE = moment(NOWDATE.format('YYYYMMDD'), 'YYYYMMDD');
-                if (NOWDATE_DATE.isAfter(autoStartDue_DATE)) {
-                    tagValue = '99:99';
+            if (isValidYYYYMMDD(autoStartDue)) {
+                if (NOWDATE.format("YYYYMMDD") > autoStartDue) {
+                    tagValue = "99:99";
                 } else {
                     if (tagValue === "1") {
                         tagValue = "08:30";
@@ -125,7 +132,7 @@ function getDateValue(instance, tagName, vnowhhmm, dayoff) {
                     }
                 }
             } else {
-                tagValue = '99:99';
+                tagValue = "99:99";
             }
         } else {
             tagValue = "99:99";

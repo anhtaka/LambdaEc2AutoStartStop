@@ -16,24 +16,24 @@ npm install
 npx eslint app.js
 
 # Create deployment zip (Linux/macOS)
-zip -rq release.zip node_modules/ app.js package.json
+zip -rq release.zip node_modules/ app.js jstDate.js package.json
 
 # Create deployment zip (Windows PowerShell)
-Compress-Archive -Path node_modules, app.js, package.json -DestinationPath release.zip
+Compress-Archive -Path node_modules, app.js, jstDate.js, package.json -DestinationPath release.zip
 ```
 
 **Docker (alternative to local Node install):**
 ```bash
 docker-compose up
 docker-compose run app npm install
-docker-compose run app zip -rq release.zip node_modules/ app.js package.json
+docker-compose run app zip -rq release.zip node_modules/ app.js jstDate.js package.json
 ```
 
 There are currently no tests (`npm test` is a no-op).
 
 ## Architecture
 
-All logic lives in a single file: `app.js`. The Lambda exports one function: `handler`.
+Main files: `app.js`（Lambda ハンドラー本体）と `jstDate.js`（JST 日時変換ユーティリティ）。The Lambda exports one function: `handler`.
 
 **Execution flow:**
 1. `getHoliday()` — parses `holidaylist` env var (CSV of `YYYY-MM-DD` dates) into `AryHoliday`
