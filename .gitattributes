@@ -3,6 +3,10 @@
 ###############################################################################
 * text=auto
 
+# ESLint enforces linebreak-style: windows, so JS must be checked out with CRLF
+# on every platform (including Linux CI runners).
+*.js text eol=crlf
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #

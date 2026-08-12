@@ -8,7 +8,12 @@
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.1075.0"
   },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.0"
+  },
   "scripts": {
+    "lint": "eslint .",
     "test": ""
   },
   "author": "",

@@ -19,13 +19,9 @@ async function stopInstance(instanceId) {
     const params = {
         InstanceIds: [instanceId],
     };
-    try {
-        const command = new StopInstancesCommand(params);
-        await ec2Client.send(command);
-        console.log("stop success. instance id = " + instanceId);
-    } catch (err) {
-        throw err;
-    }
+    const command = new StopInstancesCommand(params);
+    await ec2Client.send(command);
+    console.log("stop success. instance id = " + instanceId);
 }
 
 async function startInstance(instanceId) {
@@ -33,13 +29,9 @@ async function startInstance(instanceId) {
     const params = {
         InstanceIds: [instanceId],
     };
-    try {
-        const command = new StartInstancesCommand(params);
-        await ec2Client.send(command);
-        console.log("start success. instance id = " + instanceId);
-    } catch (err) {
-        throw err;
-    }
+    const command = new StartInstancesCommand(params);
+    await ec2Client.send(command);
+    console.log("start success. instance id = " + instanceId);
 }
 
 function handleInstance(state, start, end, nowhhmm) {
@@ -186,9 +178,9 @@ function getHoliday(){
         throw new Error("Environment variable 'holidaylist' is missing.");
     } 
     const tmp = holidayString
-      .split(',')
-      .map(date => date.trim())
-      .filter(Boolean);
+        .split(",")
+        .map(date => date.trim())
+        .filter(Boolean);
     
     AryHoliday.length = 0; // Clear array
     AryHoliday.push(...tmp);
@@ -217,12 +209,12 @@ function chkHoliday(valueDate) {
     return hFlg;
 }
 
-export const handler = async (event, context) => {
+export const handler = async () => {
     console.log("-----------------start.-----------------");
     NOWDATE = getNow();
 
     getHoliday();
-    console.log('全データ:', AryHoliday);
+    console.log("全データ:", AryHoliday);
     console.log("NOWDATE=" + NOWDATE.format("YYYY-MM-DD HH:mm dddd Z"));
 
     const nowhhmm = getMinute10(NOWDATE);
