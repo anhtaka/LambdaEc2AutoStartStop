@@ -147,10 +147,11 @@ Lambda 関数・IAM ロール・CloudWatch Events（EventBridge）ルールを I
 - **ユニットテスト**: `vitest` または `jest` で `handleInstance()`・`validValue()`・`getDateValue()` 等のロジックをテスト
 - **モックテスト**: `@aws-sdk/client-ec2` を mock して `startInstance` / `stopInstance` の呼び出しを検証
 
-### 4-3. CircleCI 設定の改善
+### 4-3. CircleCI 設定の改善（対応済み）
 
-`.circleci/config.yml` でリポジトリURLがハードコードされており、fork した場合に壊れる。
-`- checkout` ステップを使う標準的な方法に戻す。
+`.circleci/config.yml` はリポジトリURLがハードコードされており fork すると壊れる状態だったため、
+設定ごと削除し `.github/workflows/ci.yml`（GitHub Actions）へ移行した。
+チェックアウトは `actions/checkout` を使うため、この問題は解消している。
 
 ---
 
