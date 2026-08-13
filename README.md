@@ -22,7 +22,7 @@ Before setting up the Lambda function, ensure the following:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/anhtaka/LambdaEc2AutoStartStop.git
+git clone https://github.com/bocaka/LambdaEc2AutoStartStop.git
 cd LambdaEc2AutoStartStop
 ```
 ### 2. Install Dependencies

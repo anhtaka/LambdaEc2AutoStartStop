@@ -136,9 +136,11 @@ Lambda 関数・IAM ロール・CloudWatch Events（EventBridge）ルールを I
 
 ### 4-1. GitHub Actions の Node バージョン更新（対応済み）
 
-`.github/workflows/npm-publish-github-packages.yml` の `node-version: 16` は EOL だったため、
-`app.js` や `package.json` の実態に合わせて `22` に統一した（issue #869）。
-併せて `actions/checkout` / `actions/setup-node` を v3 から v5 に更新している。
+`.github/workflows/npm-publish-github-packages.yml` の `node-version: 16` は EOL だった（issue #869）。
+ただし本リポジトリは Lambda のデプロイ用であり npm パッケージとして配布する用途がないため、
+バージョンを上げるのではなく workflow ごと削除した。
+併せて `package.json` に `"private": true` を設定し、誤って publish されないようにしている。
+残る workflow（`ci.yml` / `manual-release.yml`）はいずれも Node 22 を使用。
 
 ### 4-2. テストの実装
 
