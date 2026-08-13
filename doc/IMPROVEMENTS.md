@@ -134,10 +134,11 @@ Lambda 関数・IAM ロール・CloudWatch Events（EventBridge）ルールを I
 
 ## 4. CI/CD の改善
 
-### 4-1. GitHub Actions の Node バージョン更新
+### 4-1. GitHub Actions の Node バージョン更新（対応済み）
 
-`.github/workflows/npm-publish-github-packages.yml` の `node-version: 16` は EOL。
-`app.js` や `package.json` の実態に合わせて `22` に統一する。
+`.github/workflows/npm-publish-github-packages.yml` の `node-version: 16` は EOL だったため、
+`app.js` や `package.json` の実態に合わせて `22` に統一した（issue #869）。
+併せて `actions/checkout` / `actions/setup-node` を v3 から v5 に更新している。
 
 ### 4-2. テストの実装
 
