@@ -2,7 +2,7 @@
 
 LambdaEc2AutoStartStop is an AWS Lambda function that automatically starts and stops EC2 instances based on tags. This helps to reduce costs by ensuring that EC2 instances are only running when needed.
 
-[![CircleCI](https://circleci.com/gh/anhtaka/LambdaEc2AutoStartStop/tree/master.svg?style=svg)](https://circleci.com/gh/anhtaka/LambdaEc2AutoStartStop/tree/master)
+[![CI](https://github.com/bocaka/LambdaEc2AutoStartStop/actions/workflows/ci.yml/badge.svg)](https://github.com/bocaka/LambdaEc2AutoStartStop/actions/workflows/ci.yml)
 
 ## Features
 
@@ -22,7 +22,7 @@ Before setting up the Lambda function, ensure the following:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/anhtaka/LambdaEc2AutoStartStop.git
+git clone https://github.com/bocaka/LambdaEc2AutoStartStop.git
 cd LambdaEc2AutoStartStop
 ```
 ### 2. Install Dependencies

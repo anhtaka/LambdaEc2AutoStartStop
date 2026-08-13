@@ -1,14 +1,23 @@
 {
   "name": "lambdaec2",
   "version": "1.0.0",
-  "repository": "lambdaec2",
-  "description": "To be completed - getting started text for the new project.",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bocaka/LambdaEc2AutoStartStop.git"
+  },
+  "description": "AWS Lambda function that starts and stops EC2 instances based on tags.",
   "main": "app.js",
   "type": "module",
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.1075.0"
   },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.0"
+  },
   "scripts": {
+    "lint": "eslint .",
     "test": ""
   },
   "author": "",

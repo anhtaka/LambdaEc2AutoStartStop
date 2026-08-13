@@ -13,7 +13,7 @@ AWS Lambda function that automatically starts and stops EC2 instances based on E
 npm install
 
 # Lint
-npx eslint app.js
+npm run lint
 
 # Create deployment zip (Linux/macOS)
 zip -rq release.zip node_modules/ app.js jstDate.js package.json

@@ -134,10 +134,13 @@ Lambda 関数・IAM ロール・CloudWatch Events（EventBridge）ルールを I
 
 ## 4. CI/CD の改善
 
-### 4-1. GitHub Actions の Node バージョン更新
+### 4-1. GitHub Actions の Node バージョン更新（対応済み）
 
-`.github/workflows/npm-publish-github-packages.yml` の `node-version: 16` は EOL。
-`app.js` や `package.json` の実態に合わせて `22` に統一する。
+`.github/workflows/npm-publish-github-packages.yml` の `node-version: 16` は EOL だった（issue #869）。
+ただし本リポジトリは Lambda のデプロイ用であり npm パッケージとして配布する用途がないため、
+バージョンを上げるのではなく workflow ごと削除した。
+併せて `package.json` に `"private": true` を設定し、誤って publish されないようにしている。
+残る workflow（`ci.yml` / `manual-release.yml`）はいずれも Node 22 を使用。
 
 ### 4-2. テストの実装
 
@@ -147,10 +150,11 @@ Lambda 関数・IAM ロール・CloudWatch Events（EventBridge）ルールを I
 - **ユニットテスト**: `vitest` または `jest` で `handleInstance()`・`validValue()`・`getDateValue()` 等のロジックをテスト
 - **モックテスト**: `@aws-sdk/client-ec2` を mock して `startInstance` / `stopInstance` の呼び出しを検証
 
-### 4-3. CircleCI 設定の改善
+### 4-3. CircleCI 設定の改善（対応済み）
 
-`.circleci/config.yml` でリポジトリURLがハードコードされており、fork した場合に壊れる。
-`- checkout` ステップを使う標準的な方法に戻す。
+`.circleci/config.yml` はリポジトリURLがハードコードされており fork すると壊れる状態だったため、
+設定ごと削除し `.github/workflows/ci.yml`（GitHub Actions）へ移行した。
+チェックアウトは `actions/checkout` を使うため、この問題は解消している。
 
 ---
 
