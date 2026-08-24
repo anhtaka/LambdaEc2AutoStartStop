@@ -10,7 +10,7 @@
   "main": "app.js",
   "type": "module",
   "dependencies": {
-    "@aws-sdk/client-ec2": "^3.1075.0"
+    "@aws-sdk/client-ec2": "^3.1115.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
